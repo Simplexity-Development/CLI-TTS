@@ -14,5 +14,5 @@
   "!!": "<say-as interpret-as=\"expletive\">",
   "/!": "</say-as>",
   "!/": "</say-as>",
-  "-": "<break time=\"300ms\"/>"
+  " - ": "<break time=\"300ms\"/>"
 }
