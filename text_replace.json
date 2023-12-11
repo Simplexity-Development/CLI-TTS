@@ -11,7 +11,8 @@
   "++": "<prosody volume=\"x-loud\" rate=\"fast\">",
   "/+": "</prosody>",
   "+/": "</prosody>",
-  "##": "<say-as interpret-as=\"expletive\">",
-  "#/": "</say-as>",
-  "/#": "</say-as>"
+  "!!": "<say-as interpret-as=\"expletive\">",
+  "/!": "</say-as>",
+  "!/": "</say-as>",
+  "-": "<break time=\"300ms\"/>"
 }
