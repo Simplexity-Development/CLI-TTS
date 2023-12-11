@@ -44,8 +44,9 @@ public class TTSConfig {
             System.out.println("Please update your config file to use the correct region.");
         }
         String voice = config.getString("default-voice");
+        System.out.println(voice);
         try {
-            VoiceId.valueOf(voice);
+            defaultVoice = VoiceId.valueOf(voice);
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + voice + " is not a valid voice. " +
                     "Please make sure you are only choosing from standard voices"

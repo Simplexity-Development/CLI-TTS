@@ -3,12 +3,9 @@ package simplexity.clitts;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.polly.AmazonPolly;
 import com.amazonaws.services.polly.AmazonPollyClient;
-import com.amazonaws.services.polly.model.OutputFormat;
-import com.amazonaws.services.polly.model.SynthesizeSpeechRequest;
-import com.amazonaws.services.polly.model.SynthesizeSpeechResult;
+import com.amazonaws.services.polly.model.*;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.advanced.AdvancedPlayer;
 import javazoom.jl.player.advanced.PlaybackEvent;
@@ -19,8 +16,7 @@ import java.util.Scanner;
 
 public class TextToSpeech {
     
-    private static final Region AWS_REGION = Region.getRegion(Regions.US_EAST_1);
-    private static final String VOICE_ID = "Joanna"; // Change the voice ID as needed
+    private static Region AWS_REGION;
     private static final Scanner scanner = new Scanner(System.in);
     private static AmazonPollyClient polly;
     private static boolean runProgram = true;
@@ -30,21 +26,37 @@ public class TextToSpeech {
         polly.setRegion(AWS_REGION);
     }
     
-    public InputStream synthesizeSpeech(AmazonPolly polly, String text) {
-        SynthesizeSpeechRequest synthesizeSpeechRequest = new SynthesizeSpeechRequest().withText(text).withVoiceId(VOICE_ID).withOutputFormat(OutputFormat.Mp3);
+    public InputStream synthesizeSpeech(AmazonPolly polly, String text, VoiceId voice) {
+        SynthesizeSpeechRequest synthesizeSpeechRequest = new SynthesizeSpeechRequest()
+                .withText(text)
+                .withVoiceId(voice)
+                .withOutputFormat(OutputFormat.Mp3);
         SynthesizeSpeechResult synthesizeSpeechResult = polly.synthesizeSpeech(synthesizeSpeechRequest);
         return synthesizeSpeechResult.getAudioStream();
     }
     
-    public InputStream synthesizeSSMLSpeech(AmazonPolly polly, String text) {
-        SynthesizeSpeechRequest synthesizeSpeechRequest = new SynthesizeSpeechRequest().withText(text).withTextType("ssml").withVoiceId(VOICE_ID).withOutputFormat(OutputFormat.Mp3);
-        SynthesizeSpeechResult synthesizeSpeechResult = polly.synthesizeSpeech(synthesizeSpeechRequest);
-        return synthesizeSpeechResult.getAudioStream();
+    public InputStream synthesizeSSMLSpeech(AmazonPolly polly, String text, VoiceId voice) {
+        String ssml = "<speak>" + text + "</speak>";
+        SynthesizeSpeechRequest synthesizeSpeechRequest;
+        try {
+            synthesizeSpeechRequest = new SynthesizeSpeechRequest()
+                    .withText(ssml)
+                    .withTextType(TextType.Ssml)
+                    .withVoiceId(voice)
+                    .withOutputFormat(OutputFormat.Mp3);
+            SynthesizeSpeechResult synthesizeSpeechResult = polly.synthesizeSpeech(synthesizeSpeechRequest);
+            return synthesizeSpeechResult.getAudioStream();
+        } catch (RuntimeException e) {
+            System.out.println("Error: " + e.getMessage());
+            return null;
+        }
     }
     
     public String replaceText(String text) {
         for (String key : TTSConfig.getReplaceText().keySet()) {
             text = text.replace(key, TTSConfig.getReplaceText().get(key));
+            System.out.println("key: " + key);
+            System.out.println("value: " + TTSConfig.getReplaceText().get(key));
         }
         return text;
     }
@@ -52,13 +64,15 @@ public class TextToSpeech {
     
     public static void main(String[] args) {
         System.out.println("Type your text, press Enter to convert to speech. Type 'exit' to end the program.");
+        TTSConfig.reloadConfig();
+        VoiceId VOICE_ID = TTSConfig.defaultVoice;
+        AWS_REGION = TTSConfig.AWS_REGION;
         TextToSpeech tts = new TextToSpeech();
         InputStream speechStream;
-        TTSConfig.reloadConfig();
+        System.out.println("Using voice: " + VOICE_ID);
         while (runProgram) {
             System.out.println("Enter text:");
             String text = scanner.nextLine();
-            String textRef = text;
             switch (text) {
                 case ("--exit") -> {
                     runProgram = false;
@@ -66,18 +80,20 @@ public class TextToSpeech {
                 }
                 case ("--help") ->
                         System.out.println("Type your text, press Enter to convert to speech. Type '--exit' to end the program.");
-                case ("--reload") -> {
-                    TTSConfig.reloadConfig();
-                    System.out.println("Config reloaded.");
-                }
                 default -> {
-                    text = tts.replaceText(text);
-                    boolean useSSML = !textRef.equals(text);
+                    System.out.println(text);
+                    String newText = tts.replaceText(text);
+                    System.out.println(newText);
+                    boolean useSSML = !text.equals(newText);
                     try {
                         if (!useSSML) {
-                            speechStream = tts.synthesizeSpeech(polly, text);
+                            speechStream = tts.synthesizeSpeech(polly, newText, VOICE_ID);
                         } else {
-                            speechStream = tts.synthesizeSSMLSpeech(polly, text);
+                            speechStream = tts.synthesizeSSMLSpeech(polly, newText, VOICE_ID);
+                        }
+                        if (speechStream == null) {
+                            System.out.println("Error: Speech stream is null.");
+                            continue;
                         }
                         AdvancedPlayer player = new AdvancedPlayer(speechStream, javazoom.jl.player.FactoryRegistry.systemRegistry().createAudioDevice());
                         player.setPlayBackListener(new PlaybackListener() {
