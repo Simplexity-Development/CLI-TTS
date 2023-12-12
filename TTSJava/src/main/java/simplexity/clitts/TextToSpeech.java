@@ -99,7 +99,7 @@ public class TextToSpeech {
     }
     
     public static void main(String[] args) {
-        System.out.println("Type your text, press Enter to convert to speech. Type 'exit' to end the program.");
+        System.out.println("Type your text, press Enter to convert to speech. Type '--exit' to end the program.");
         TTSConfig.reloadConfig();
         VOICE_ID = TTSConfig.defaultVoice;
         AWS_REGION = TTSConfig.AWS_REGION;
@@ -114,7 +114,6 @@ public class TextToSpeech {
                 case ("--help") -> System.out.println("Type your text, press Enter to convert to speech. " +
                         "Type '--exit' to end the program.");
                 default -> processSpeech(text);
-                
             }
         }
     }
