@@ -1,6 +1,7 @@
 package simplexity.clitts;
 
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.regions.Region;
 import com.amazonaws.services.polly.AmazonPolly;
@@ -16,27 +17,27 @@ import java.io.InputStream;
 import java.util.Scanner;
 
 public class TextToSpeech {
-    
+
     private static Region AWS_REGION;
     private static final Scanner scanner = new Scanner(System.in);
-    private static AmazonPollyClient polly;
+    private static AmazonPolly polly;
     private static VoiceId VOICE_ID;
     private static boolean runProgram = true;
     private static TextToSpeech instance;
     private static InputStream speechStream;
-    
+
     public TextToSpeech() {
-        polly = new AmazonPollyClient(new DefaultAWSCredentialsProviderChain(), new ClientConfiguration());
+        polly = new AmazonPollyClient(new BasicAWSCredentials(TTSConfig.getInstance().getAccessID(), TTSConfig.getInstance().getAccessSecret()), new ClientConfiguration());
         polly.setRegion(AWS_REGION);
     }
-    
+
     public static TextToSpeech getInstance() {
         if (instance == null) {
             instance = new TextToSpeech();
         }
         return instance;
     }
-    
+
     public InputStream synthesizeSpeech(AmazonPolly polly, String text, VoiceId voice) {
         SynthesizeSpeechRequest synthesizeSpeechRequest = new SynthesizeSpeechRequest()
                 .withText(text)
@@ -45,7 +46,7 @@ public class TextToSpeech {
         SynthesizeSpeechResult synthesizeSpeechResult = polly.synthesizeSpeech(synthesizeSpeechRequest);
         return synthesizeSpeechResult.getAudioStream();
     }
-    
+
     public InputStream synthesizeSSMLSpeech(AmazonPolly polly, String text, VoiceId voice) {
         String ssml = "<speak>" + text + "</speak>";
         SynthesizeSpeechRequest synthesizeSpeechRequest;
@@ -62,20 +63,20 @@ public class TextToSpeech {
             return null;
         }
     }
-    
+
     public String replaceText(String text) {
-        for (String key : TTSConfig.getReplaceText().keySet()) {
-            text = text.replace(key, TTSConfig.getReplaceText().get(key));
+        for (String key : TTSConfig.getInstance().getReplaceText().keySet()) {
+            text = text.replace(key, TTSConfig.getInstance().getReplaceText().get(key));
         }
-        for (String key : TTSConfig.getVoicePrefixes().keySet()) {
+        for (String key : TTSConfig.getInstance().getVoicePrefixes().keySet()) {
             if (text.startsWith(key)) {
                 text = text.replace(key, "");
-                VOICE_ID = TTSConfig.getVoicePrefixes().get(key);
+                VOICE_ID = TTSConfig.getInstance().getVoicePrefixes().get(key);
             }
         }
         return text;
     }
-    
+
     public static void processSpeech(String text) {
         TextToSpeech tts = getInstance();
         String newText = tts.replaceText(text);
@@ -97,12 +98,12 @@ public class TextToSpeech {
             System.out.println("Error playing speech. " + e);
         }
     }
-    
+
     public static void main(String[] args) {
+        TTSConfig.getInstance().reloadConfig();
         System.out.println("Type your text, press Enter to convert to speech. Type '--exit' to end the program.");
-        TTSConfig.reloadConfig();
-        VOICE_ID = TTSConfig.defaultVoice;
-        AWS_REGION = TTSConfig.AWS_REGION;
+        VOICE_ID = TTSConfig.getInstance().getDefaultVoice();
+        AWS_REGION = TTSConfig.getInstance().getRegion();
         while (runProgram) {
             System.out.println("Enter text:");
             String text = scanner.nextLine();

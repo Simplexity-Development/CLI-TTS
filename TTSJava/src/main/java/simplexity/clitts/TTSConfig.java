@@ -9,29 +9,39 @@ import com.typesafe.config.ConfigFactory;
 import java.util.HashMap;
 
 public class TTSConfig {
+    private static TTSConfig instance;
+    private final HashMap<String, String> replaceText = new HashMap<>();
+    private final HashMap<String, VoiceId> voicePrefixes = new HashMap<>();
+    private Region AWS_REGION;
+    private VoiceId defaultVoice;
+    private String accessID, accessSecret;
     
-    private static final HashMap<String, String> replaceText = new HashMap<>();
-    private static final HashMap<String, VoiceId> voicePrefixes = new HashMap<>();
-    public static Region AWS_REGION;
-    public static VoiceId defaultVoice;
-    
-    
-    public static void reloadConfig() {
+    private TTSConfig() {}
+
+    public static TTSConfig getInstance() {
+        if (instance == null) {
+            instance = new TTSConfig();
+        }
+        return instance;
+    }
+
+    public void reloadConfig() {
         Config config = ConfigFactory.load();
         reloadReplaceText(config);
         reloadVoicePrefixes(config);
         reloadRegion(config);
         reloadDefaultVoice(config);
+        reloadAccessStrings(config);
     }
     
-    private static void reloadReplaceText(Config config) {
+    private void reloadReplaceText(Config config) {
         replaceText.clear();
         config.getConfig("replace-text").entrySet().forEach(entry -> {
             replaceText.put(entry.getKey().replace("\"", ""), entry.getValue().unwrapped().toString());
         });
     }
     
-    private static void reloadVoicePrefixes(Config config) {
+    private void reloadVoicePrefixes(Config config) {
         voicePrefixes.clear();
         config.getConfig("voice-prefixes").entrySet().forEach(entry -> {
             try {
@@ -47,7 +57,7 @@ public class TTSConfig {
         });
     }
     
-    private static void reloadRegion(Config config) {
+    private void reloadRegion(Config config) {
         String region = config.getString("aws-region");
         try {
             AWS_REGION = Region.getRegion(Regions.valueOf(region));
@@ -62,7 +72,7 @@ public class TTSConfig {
         }
     }
     
-    private static void reloadDefaultVoice(Config config) {
+    private void reloadDefaultVoice(Config config) {
         String voice = config.getString("default-voice");
         try {
             defaultVoice = VoiceId.valueOf(voice);
@@ -74,14 +84,32 @@ public class TTSConfig {
             defaultVoice = VoiceId.Kimberly; // Default to Kimberly if voice is invalid.
         }
     }
+
+    private void reloadAccessStrings(Config config) {
+        accessID = config.getString("aws-access-id");
+        accessSecret = config.getString("aws-access-secret");
+    }
     
-    public static HashMap<String, String> getReplaceText() {
+    public HashMap<String, String> getReplaceText() {
         return replaceText;
     }
     
     
-    public static HashMap<String, VoiceId> getVoicePrefixes() {
+    public HashMap<String, VoiceId> getVoicePrefixes() {
         return voicePrefixes;
+    }
+
+    public Region getRegion() {
+        return AWS_REGION;
+    }
+    public VoiceId getDefaultVoice() {
+        return defaultVoice;
+    }
+    public String getAccessID() {
+        return accessID;
+    }
+    public String getAccessSecret() {
+        return accessSecret;
     }
     
 }
