@@ -6,6 +6,9 @@ import com.amazonaws.services.polly.model.VoiceId;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 
 public class TTSConfig {
@@ -15,8 +18,9 @@ public class TTSConfig {
     private Region AWS_REGION;
     private VoiceId defaultVoice;
     private String accessID, accessSecret;
-    
-    private TTSConfig() {}
+
+    private TTSConfig() {
+    }
 
     public static TTSConfig getInstance() {
         if (instance == null) {
@@ -26,21 +30,70 @@ public class TTSConfig {
     }
 
     public void reloadConfig() {
-        Config config = ConfigFactory.load();
+        Config config = loadConfig();
         reloadReplaceText(config);
         reloadVoicePrefixes(config);
         reloadRegion(config);
         reloadDefaultVoice(config);
         reloadAccessStrings(config);
     }
-    
+
+    private Config loadConfig() {
+        String externalConfigPath = "application.conf";
+        File externalConfigFile = new File(externalConfigPath);
+        if (!externalConfigFile.exists()) {
+            createDefaultConfigFile(externalConfigFile);
+        }
+        return ConfigFactory.parseFile(externalConfigFile).resolve();
+    }
+
+    private void createDefaultConfigFile(File file) {
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write("aws-region = \"US_EAST_1\"\n");
+            writer.write("default-voice = \"Kimberly\"\n");
+            writer.write("aws-access-id = \"\"\n");
+            writer.write("aws-access-secret = \"\"\n");
+            writer.write("""
+                    replace-text {
+                      "**" = "<prosody volume=\\"x-loud\\" pitch=\\"low\\" rate=\\"slow\\">"
+                      "/*" = "</prosody>"
+                      "*/" = "</prosody>"
+                      "~~" = "<amazon:effect name=\\"whispered\\">"
+                      "/~" = "</amazon:effect>"
+                      "~/" = "</amazon:effect>"
+                      "__" = "<emphasis level=\\"strong\\">"
+                      "/_" = "</emphasis>"
+                      "_/" = "</emphasis>"
+                      "++" = "<prosody volume=\\"x-loud\\" rate=\\"x-fast\\" pitch=\\"x-high\\">"
+                      "/+" = "</prosody>"
+                      "+/" = "</prosody>"
+                      "!!" = "<say-as interpret-as=\\"expletive\\">"
+                      "/!" = "</say-as>"
+                      "!/" = "</say-as>"
+                      " - " = "<break time=\\"300ms\\"/>"
+                      "<3" = "heart emoji"
+                    }
+                    """);
+            writer.write("""
+                    voice-prefixes {
+                      "Sal:" = "Salli"
+                      "Kim:" = "Kimberly"
+                      "Bri:" = "Brian"
+                    }
+                    """);
+        } catch (IOException e) {
+            System.out.println("Error creating default config file.");
+            e.printStackTrace();
+        }
+    }
+
     private void reloadReplaceText(Config config) {
         replaceText.clear();
         config.getConfig("replace-text").entrySet().forEach(entry -> {
             replaceText.put(entry.getKey().replace("\"", ""), entry.getValue().unwrapped().toString());
         });
     }
-    
+
     private void reloadVoicePrefixes(Config config) {
         voicePrefixes.clear();
         config.getConfig("voice-prefixes").entrySet().forEach(entry -> {
@@ -56,7 +109,7 @@ public class TTSConfig {
             }
         });
     }
-    
+
     private void reloadRegion(Config config) {
         String region = config.getString("aws-region");
         try {
@@ -71,7 +124,7 @@ public class TTSConfig {
             System.out.println("Please update your config file to use the correct region.");
         }
     }
-    
+
     private void reloadDefaultVoice(Config config) {
         String voice = config.getString("default-voice");
         try {
@@ -89,12 +142,12 @@ public class TTSConfig {
         accessID = config.getString("aws-access-id");
         accessSecret = config.getString("aws-access-secret");
     }
-    
+
     public HashMap<String, String> getReplaceText() {
         return replaceText;
     }
-    
-    
+
+
     public HashMap<String, VoiceId> getVoicePrefixes() {
         return voicePrefixes;
     }
@@ -102,14 +155,17 @@ public class TTSConfig {
     public Region getRegion() {
         return AWS_REGION;
     }
+
     public VoiceId getDefaultVoice() {
         return defaultVoice;
     }
+
     public String getAccessID() {
         return accessID;
     }
+
     public String getAccessSecret() {
         return accessSecret;
     }
-    
+
 }

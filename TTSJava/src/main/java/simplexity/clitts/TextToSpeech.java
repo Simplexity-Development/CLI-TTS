@@ -2,7 +2,6 @@ package simplexity.clitts;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.regions.Region;
 import com.amazonaws.services.polly.AmazonPolly;
 import com.amazonaws.services.polly.AmazonPollyClient;
@@ -24,7 +23,11 @@ public class TextToSpeech {
     private static VoiceId VOICE_ID;
     private static boolean runProgram = true;
     private static TextToSpeech instance;
-    private static InputStream speechStream;
+    private static final String boldRed = "\u001b[31;1m";
+    private static final String formatReset = "\u001b[0m";
+    private static final String boldGreen = "\u001b[32;1m";
+    private static final String cyan = "\u001b[36m";
+    private static final String yellow = "\u001b[33m";
 
     public TextToSpeech() {
         polly = new AmazonPollyClient(new BasicAWSCredentials(TTSConfig.getInstance().getAccessID(), TTSConfig.getInstance().getAccessSecret()), new ClientConfiguration());
@@ -59,7 +62,7 @@ public class TextToSpeech {
             SynthesizeSpeechResult synthesizeSpeechResult = polly.synthesizeSpeech(synthesizeSpeechRequest);
             return synthesizeSpeechResult.getAudioStream();
         } catch (RuntimeException e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(boldRed + "Error: " + e.getMessage() + formatReset);
             return null;
         }
     }
@@ -82,30 +85,33 @@ public class TextToSpeech {
         String newText = tts.replaceText(text);
         boolean useSSML = !text.equals(newText);
         try {
+            InputStream speechStream;
             if (!useSSML) {
                 speechStream = tts.synthesizeSpeech(polly, newText, VOICE_ID);
             } else {
                 speechStream = tts.synthesizeSSMLSpeech(polly, newText, VOICE_ID);
             }
             if (speechStream == null) {
-                System.out.println("Error: Speech stream is null.");
+                System.out.println(boldRed + "Error: Speech stream is null." + formatReset);
                 return;
             }
             AdvancedPlayer player = new AdvancedPlayer(speechStream,
                     javazoom.jl.player.FactoryRegistry.systemRegistry().createAudioDevice());
             player.play();
         } catch (JavaLayerException e) {
-            System.out.println("Error playing speech. " + e);
+            System.out.println(boldRed + "Error playing speech. " + e + formatReset);
         }
     }
 
     public static void main(String[] args) {
         TTSConfig.getInstance().reloadConfig();
-        System.out.println("Type your text, press Enter to convert to speech. Type '--exit' to end the program.");
+        System.out.println("Type your text then press" + cyan + " Enter" + formatReset + " to convert to speech."
+                + "\nType" + cyan + " --reload" + formatReset + " to reload the configuration."
+                + "\nType " + cyan + "--exit" + formatReset + " to end the program.");
         VOICE_ID = TTSConfig.getInstance().getDefaultVoice();
         AWS_REGION = TTSConfig.getInstance().getRegion();
         while (runProgram) {
-            System.out.println("Enter text:");
+            System.out.println(yellow + "Enter text:" + formatReset);
             String text = scanner.nextLine();
             switch (text) {
                 case ("--exit") -> {
@@ -114,7 +120,22 @@ public class TextToSpeech {
                 }
                 case ("--help") -> System.out.println("Type your text, press Enter to convert to speech. " +
                         "Type '--exit' to end the program.");
-                default -> processSpeech(text);
+                case ("--reload") -> {
+                    TTSConfig.getInstance().reloadConfig();
+                    System.out.println(boldGreen + "Config Reloaded" + formatReset);
+                }
+                default -> {
+                    if (TTSConfig.getInstance().getAccessID().isBlank() || TTSConfig.getInstance().getAccessID().isEmpty()) {
+                        System.out.println(boldRed + "AWS Access ID is not set. Please set your AWS Access ID and Access secret then use '--reload'" + formatReset);
+                        continue;
+                    }
+                    if (TTSConfig.getInstance().getAccessSecret().isBlank() || TTSConfig.getInstance().getAccessSecret().isEmpty()) {
+                        System.out.println(boldRed + "AWS Access Secret is not set. Please set your AWS Access ID and Access secret then use '--reload'" + formatReset);
+                        continue;
+                    }
+                    processSpeech(text);
+                }
+
             }
         }
     }
