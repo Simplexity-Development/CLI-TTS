@@ -24,11 +24,23 @@ The voice prefixes section allows you to set a prefix that will switch the voice
 Then, if you use that prefix at the beginning of a message, the application will switch to that voice until another
 prefix is used.
 
+### AWS
+Using this requires an AWS account - https://aws.amazon.com/
+You can use a free account - Please do read and check the limits and such though.
+You will need to go to Identity and Access Management -> Access Keys
+You will get an Access ID and Access Secret from there.
+
+References:
+- [Amazon Polly Description of Limits/Price](https://aws.amazon.com/polly/pricing/)
+- [Setting up a user and how to use IAM](https://docs.aws.amazon.com/signer/latest/developerguide/iam-setup.html)
+
 ### Default configuration
 
 ```HOCON
 aws-region = "US_EAST_1"
 default-voice = "Kimberly"
+aws-access-id = ""
+aws-access-secret = ""
 replace-text {
   "**" = "<prosody volume=\"x-loud\" pitch=\"low\" rate=\"slow\">"
   "/*" = "</prosody>"
@@ -49,9 +61,9 @@ replace-text {
   "<3" = "heart emoji"
 }
 voice-prefixes {
-  "R:" = "Salli"
-  "E:" = "Kimberly"
-  "D-" = "Brian"
+  "Sal:" = "Salli"
+  "Kim:" = "Kimberly"
+  "Bri:" = "Brian"
 }
 ```
 
