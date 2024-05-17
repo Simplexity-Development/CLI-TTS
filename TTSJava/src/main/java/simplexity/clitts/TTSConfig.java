@@ -5,6 +5,8 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.polly.model.VoiceId;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigValue;
+import com.typesafe.config.ConfigValueFactory;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -17,7 +19,8 @@ public class TTSConfig {
     private final HashMap<String, VoiceId> voicePrefixes = new HashMap<>();
     private Region AWS_REGION;
     private VoiceId defaultVoice;
-    private String accessID, accessSecret;
+    private boolean useTwitch = false;
+    private String accessID, accessSecret, twitchChannel, twitchAuthCode;
 
     private TTSConfig() {
     }
@@ -36,6 +39,7 @@ public class TTSConfig {
         reloadRegion(config);
         reloadDefaultVoice(config);
         reloadAccessStrings(config);
+        reloadTwitchChannel(config);
     }
 
     private Config loadConfig() {
@@ -53,6 +57,9 @@ public class TTSConfig {
             writer.write("default-voice = \"Kimberly\"\n");
             writer.write("aws-access-id = \"\"\n");
             writer.write("aws-access-secret = \"\"\n");
+            writer.write("twitch-channel = \"\"\n");
+            writer.write("twitch-auth-code = \"\"\n");
+            writer.write("connect-to-twitch = false\n");
             writer.write("""
                     replace-text {
                       "**" = "<prosody volume=\\"x-loud\\" pitch=\\"low\\" rate=\\"slow\\">"
@@ -143,6 +150,21 @@ public class TTSConfig {
         accessSecret = config.getString("aws-access-secret");
     }
 
+    private void reloadTwitchChannel(Config config) {
+        twitchChannel = config.getString("twitch-channel");
+        if (!twitchChannel.isEmpty()) {
+            useTwitch = config.getBoolean("connect-to-twitch");
+        }
+    }
+
+    public String getTwitchChannel() {
+        return twitchChannel;
+    }
+
+    public boolean connectToTwitch() {
+        return useTwitch;
+    }
+
     public HashMap<String, String> getReplaceText() {
         return replaceText;
     }
@@ -167,5 +189,16 @@ public class TTSConfig {
     public String getAccessSecret() {
         return accessSecret;
     }
+    public String getTwitchAuthCode() {
+        return twitchAuthCode;
+    }
+
+    public void setTwitchAuthCode(String authCode) {
+        twitchAuthCode = authCode;
+        Config config = loadConfig();
+        ConfigValue twitchCode = ConfigValueFactory.fromAnyRef(authCode);
+        config.withValue("twitch-auth-code", twitchCode);
+    }
+
 
 }
