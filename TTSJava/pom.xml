@@ -62,6 +62,11 @@
             <artifactId>config</artifactId>
             <version>1.4.3</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.twitch4j</groupId>
+            <artifactId>twitch4j</artifactId>
+            <version>1.20.0</version>
+        </dependency>
 
     </dependencies>
 

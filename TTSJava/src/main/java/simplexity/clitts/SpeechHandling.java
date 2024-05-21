@@ -17,13 +17,13 @@ import java.io.InputStream;
 
 public class SpeechHandling {
 
-    static Region AWS_REGION;
+    static Region awsRegion;
     static AmazonPolly polly;
-    static VoiceId VOICE_ID;
+    static VoiceId voiceId;
 
     private SpeechHandling() {
         polly = new AmazonPollyClient(new BasicAWSCredentials(TTSConfig.getInstance().getAccessID(), TTSConfig.getInstance().getAccessSecret()), new ClientConfiguration());
-        polly.setRegion(AWS_REGION);
+        polly.setRegion(awsRegion);
     }
 
     private static SpeechHandling instance;
@@ -34,15 +34,14 @@ public class SpeechHandling {
     }
 
     public void processSpeech(String text) {
-        TextToSpeech tts = TextToSpeech.getInstance();
         String newText = replaceText(text);
         boolean useSSML = !text.equals(newText);
         try {
             InputStream speechStream;
             if (!useSSML) {
-                speechStream = synthesizeSpeech(polly, newText, VOICE_ID);
+                speechStream = synthesizeSpeech(polly, newText, voiceId);
             } else {
-                speechStream = synthesizeSSMLSpeech(polly, newText, VOICE_ID);
+                speechStream = synthesizeSSMLSpeech(polly, newText, voiceId);
             }
             if (speechStream == null) {
                 System.out.println(Colors.boldRed + "Error: Speech stream is null." + Colors.formatReset);
@@ -63,7 +62,7 @@ public class SpeechHandling {
         for (String key : TTSConfig.getInstance().getVoicePrefixes().keySet()) {
             if (text.startsWith(key)) {
                 text = text.replace(key, "");
-                SpeechHandling.VOICE_ID = TTSConfig.getInstance().getVoicePrefixes().get(key);
+                SpeechHandling.voiceId = TTSConfig.getInstance().getVoicePrefixes().get(key);
             }
         }
         return text;

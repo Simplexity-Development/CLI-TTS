@@ -28,8 +28,8 @@ public class TwitchAuthServer {
         public void handle(HttpExchange t) throws IOException {
             String twitchCode = t.getRequestURI().getQuery().split("=")[1];
             twitchCode = twitchCode.split("&")[0];
-            TTSConfig.getInstance().setTwitchAuthCode(twitchCode);
-            
+            TTSConfig.getInstance().updateConfigValue("twitch-o-auth-code", twitchCode);
+            TTSConfig.getInstance().reloadConfig();
             // Respond to the client
             String response = "Twitch authentication successful!";
             t.sendResponseHeaders(200, response.length());

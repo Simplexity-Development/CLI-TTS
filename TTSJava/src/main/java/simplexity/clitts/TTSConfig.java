@@ -5,6 +5,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.polly.model.VoiceId;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigRenderOptions;
 import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueFactory;
 
@@ -20,6 +21,7 @@ public class TTSConfig {
     private Region AWS_REGION;
     private VoiceId defaultVoice;
     private boolean useTwitch = false;
+    private Config config;
     private String accessID, accessSecret, twitchChannel, twitchAuthCode;
 
     private TTSConfig() {
@@ -33,7 +35,7 @@ public class TTSConfig {
     }
 
     public void reloadConfig() {
-        Config config = loadConfig();
+        config = loadConfig();
         reloadReplaceText(config);
         reloadVoicePrefixes(config);
         reloadRegion(config);
@@ -157,6 +159,17 @@ public class TTSConfig {
         }
     }
 
+    public void updateConfigValue(String key, String value) {
+        config = config.withValue(key, ConfigFactory.parseString(key +  "=\"" + value + "\"").root());
+        try (FileWriter writer = new FileWriter("application.conf")) {
+            writer.write(config.root().render(ConfigRenderOptions.defaults()));
+        }
+        catch (IOException e) {
+            System.out.println("Error updating config file.");
+            e.printStackTrace();
+        }
+    }
+
     public String getTwitchChannel() {
         return twitchChannel;
     }
@@ -199,6 +212,4 @@ public class TTSConfig {
         ConfigValue twitchCode = ConfigValueFactory.fromAnyRef(authCode);
         config.withValue("twitch-auth-code", twitchCode);
     }
-
-
 }

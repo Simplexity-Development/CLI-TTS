@@ -1,6 +1,7 @@
 package simplexity.clitts;
 
 import simplexity.clitts.twitch.TwitchAuthServer;
+import simplexity.clitts.twitch.TwitchMessaging;
 import simplexity.clitts.util.Messages;
 
 import java.io.IOException;
@@ -23,8 +24,8 @@ public class TextToSpeech {
     public static void main(String[] args) {
         TTSConfig.getInstance().reloadConfig();
         System.out.println(Messages.startupMessage);
-        SpeechHandling.VOICE_ID = TTSConfig.getInstance().getDefaultVoice();
-        SpeechHandling.AWS_REGION = TTSConfig.getInstance().getRegion();
+        SpeechHandling.voiceId = TTSConfig.getInstance().getDefaultVoice();
+        SpeechHandling.awsRegion = TTSConfig.getInstance().getRegion();
         checkTwitch();
         while (runProgram) {
             System.out.println(Messages.enterText);
@@ -37,6 +38,7 @@ public class TextToSpeech {
                 case ("--help") -> System.out.println(Messages.helpMessage);
                 case ("--reload") -> {
                     TTSConfig.getInstance().reloadConfig();
+                    checkTwitch();
                     System.out.println(Messages.reloadMessage);
                 }
                 default -> {
@@ -66,15 +68,15 @@ public class TextToSpeech {
                     case ("y") -> {
                         validInput = true;
                         checkTwitchAuth();
-
                     }
                     case ("n") -> {
                         validInput = true;
                     }
                     default -> System.out.println(Messages.stayConnectedError);
                 }
-
             }
+            if (TTSConfig.getInstance().getTwitchAuthCode() == null) return;
+            TwitchMessaging.getInstance().setupTwitch(TTSConfig.getInstance().getTwitchAuthCode());
         }
     }
 
