@@ -1,6 +1,8 @@
 package simplexity.commands;
 
 import simplexity.Main;
+import simplexity.messages.Output;
+import simplexity.util.ConsoleColors;
 
 import java.util.Arrays;
 
@@ -11,9 +13,10 @@ public class HelpCommand extends Command{
 
     @Override
     public void execute() {
-        System.out.println("Help command");
+        System.out.println(Output.HELP_HEADER);
         for (Command command : Main.getCommandManager().getCommands().values()) {
-            System.out.println(command.getName() + " - " + command.getDescription());
+            System.out.println(Output.HELP_COMMAND_MESSAGE.replace("%command_name%", command.getName())
+                    .replace("%command_description%", command.getDescription()));
         }
     }
 }

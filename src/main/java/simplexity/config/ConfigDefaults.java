@@ -35,4 +35,5 @@ public class ConfigDefaults {
                       "Bri:"= "Brian"
                     }
                     """;
+    public static final String TWITCH_OAUTH = "twitch-oauth= %code%";
 }

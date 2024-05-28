@@ -45,4 +45,6 @@ public class Errors {
             ConsoleColors.RED_BRIGHT + """
             ERROR: %error%
             """ + ConsoleColors.RESET;
+
+
 }

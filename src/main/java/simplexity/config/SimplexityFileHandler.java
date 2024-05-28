@@ -1,5 +1,7 @@
 package simplexity.config;
 
+import simplexity.messages.Errors;
+
 import java.io.File;
 import java.io.FileWriter;
 
@@ -13,16 +15,16 @@ public class SimplexityFileHandler {
         }
         return instance;
     }
-    public File createOrLoadFile(){
+    public File createOrLoadConfigFile(){
         File file = new File("tts-config.conf");
         if (file.exists()){
             return file;
         }
-        createFile();
+        createConfigFile();
         return file;
     }
 
-    private void createFile(){
+    private void createConfigFile(){
         File file = new File("tts-config.conf");
         try (FileWriter writer = new FileWriter(file)) {
             writer.write(ConfigDefaults.AWS_REGION);
@@ -34,7 +36,16 @@ public class SimplexityFileHandler {
             writer.write(ConfigDefaults.DEFAULT_VOICE);
             writer.write(ConfigDefaults.VOICE_PREFIXES);
         } catch (Exception e){
-            e.printStackTrace();
+            System.out.println(Errors.CAUGHT_EXCEPTION.replace("%error%", e.getMessage()));
+        }
+    }
+
+    public static void createTwitchFile(String authCode){
+        File file = new File("twitch-oauth.conf");
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(ConfigDefaults.TWITCH_OAUTH.replace("%code%", authCode));
+        } catch (Exception e){
+            System.out.println(Errors.CAUGHT_EXCEPTION.replace("%error%", e.getMessage()));
         }
     }
 }

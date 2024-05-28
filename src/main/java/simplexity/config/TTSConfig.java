@@ -18,6 +18,7 @@ public class TTSConfig {
     private VoiceId defaultVoice;
     private String awsAccessID, awsSecretKey, twitchChannel;
     private boolean connectToTwitch;
+    private String twitchOAuth;
     private TTSConfig(){}
     private static TTSConfig instance;
     public static TTSConfig getInstance(){
@@ -47,11 +48,26 @@ public class TTSConfig {
         reloadDefaultVoice(config);
         reloadStrings(config);
         reloadBooleans(config);
+        reloadTwitchOAuth();
+    }
+
+    public void reloadTwitchOAuth(){
+        Config config = initializeTwitchAuth();
+        if (config == null) return;
+        twitchOAuth = config.getString("twitch-oauth");
     }
 
     private Config initializeConfig() {
-        File configFile = SimplexityFileHandler.getInstance().createOrLoadFile();
+        File configFile = SimplexityFileHandler.getInstance().createOrLoadConfigFile();
         return ConfigFactory.parseFile(configFile).resolve();
+    }
+
+    private Config initializeTwitchAuth(){
+        File oauthFile = new File("twitch-oauth.conf");
+        if(oauthFile.exists()){
+            return ConfigFactory.parseFile(oauthFile).resolve();
+        }
+        return null;
     }
 
     private void reloadReplaceText(Config config){
@@ -119,5 +135,9 @@ public class TTSConfig {
 
     public boolean isConnectToTwitch() {
         return connectToTwitch;
+    }
+
+    public String getTwitchOAuth() {
+        return twitchOAuth;
     }
 }
