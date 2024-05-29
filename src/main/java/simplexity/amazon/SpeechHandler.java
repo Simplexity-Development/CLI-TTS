@@ -7,14 +7,18 @@ import com.amazonaws.services.polly.model.TextType;
 import com.amazonaws.services.polly.model.VoiceId;
 import javazoom.jl.player.FactoryRegistry;
 import javazoom.jl.player.advanced.AdvancedPlayer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 import simplexity.Main;
 import simplexity.config.TTSConfig;
 import simplexity.messages.Errors;
+import simplexity.util.Util;
 
 import java.io.InputStream;
 
 public class SpeechHandler {
-
+    private static final Logger logger = LoggerFactory.getLogger(SpeechHandler.class);
     private VoiceId voiceId;
 
     public SpeechHandler() {
@@ -33,7 +37,7 @@ public class SpeechHandler {
             speechStream = synthesizeSpeech(processedText, voiceId);
         }
         if (speechStream == null) {
-            System.out.println(Errors.CAUGHT_EXCEPTION.replace("%error%", "Speech stream is null"));
+            Util.logAndPrint(logger, Errors.CAUGHT_EXCEPTION.replace("%error%", "Speech stream is null"), Level.ERROR);
             return;
         }
         playSpeech(speechStream);
@@ -64,7 +68,7 @@ public class SpeechHandler {
             SynthesizeSpeechResult synthesizeSpeechResult = Main.getPollyHandler().getPolly().synthesizeSpeech(synthesizeSpeechRequest);
             return synthesizeSpeechResult.getAudioStream();
         } catch (RuntimeException exception) {
-            System.out.println(Errors.CAUGHT_EXCEPTION.replace("%error%", exception.getMessage()));
+            Util.logAndPrint(logger, Errors.CAUGHT_EXCEPTION.replace("%error%", exception.getMessage()), Level.ERROR);
             return null;
         }
     }
@@ -84,7 +88,7 @@ public class SpeechHandler {
             player = new AdvancedPlayer(speechStream, FactoryRegistry.systemRegistry().createAudioDevice());
             player.play();
         } catch (Exception exception) {
-            System.out.println(Errors.CAUGHT_EXCEPTION.replace("%error%", exception.getMessage()));
+            Util.logAndPrint(logger, Errors.CAUGHT_EXCEPTION.replace("%error%", exception.getMessage()), Level.ERROR);
         }
     }
 }

@@ -1,16 +1,18 @@
 package simplexity.twitch;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 import simplexity.Main;
 import simplexity.config.TTSConfig;
 import simplexity.httpserver.AuthServer;
 import simplexity.messages.Errors;
 import simplexity.messages.Output;
-
-import java.util.concurrent.CountDownLatch;
+import simplexity.util.Util;
 
 public class TwitchSetup {
 
-    private static final CountDownLatch latch = new CountDownLatch(1);
+    private static final Logger logger = LoggerFactory.getLogger(TwitchSetup.class);
 
     public void setup() {
         if (!checkConfig()) return;
@@ -19,11 +21,14 @@ public class TwitchSetup {
             if (!checkAuth()) {
                 System.out.println(Output.PRESS_ENTER_TO_CONTINUE);
                 Main.scanner.nextLine();
+                logger.info("awaiting user input to continue..");
                 TTSConfig.getInstance().reloadConfig();
+                logger.info("Reloaded config file");
                 AuthServer.stop();
+                logger.info("Auth server has been stopped");
             }
             if (checkAuth()) {
-                System.out.println(Output.AUTH_SUCCESS);
+                Util.logAndPrint(logger, Output.AUTH_SUCCESS, Level.INFO);
             }
         }
     }
@@ -33,7 +38,7 @@ public class TwitchSetup {
         boolean useTwitch = TTSConfig.getInstance().isConnectToTwitch();
         if (!useTwitch) return false;
         if (twitchChannel.isEmpty()) {
-            System.out.println(Errors.NO_CHANNEL_PROVIDED);
+            Util.logAndPrint(logger, Errors.NO_CHANNEL_PROVIDED, Level.ERROR);
             return false;
         }
         return true;
@@ -42,27 +47,28 @@ public class TwitchSetup {
     public boolean checkAuth() {
         String twitchOAuth = TTSConfig.getInstance().getTwitchOAuth();
         if (twitchOAuth == null || twitchOAuth.isEmpty()) {
+            logger.info(Errors.NO_OAUTH_PROVIDED);
             return false;
         }
         return true;
     }
 
     public boolean requestAuth() {
-        System.out.println(Errors.NO_OAUTH_PROVIDED);
-        System.out.println(Output.WANT_TO_AUTH_MESSAGE);
+        Util.logAndPrint(logger, Errors.NO_OAUTH_PROVIDED, Level.ERROR);
+        Util.logAndPrint(logger, Output.WANT_TO_AUTH_MESSAGE, Level.INFO);
         String input = Main.scanner.nextLine();
         while (true) {
             switch (input.toLowerCase()) {
                 case "y":
-                    System.out.println(Output.OPEN_LINK_MESSAGE);
-                    System.out.println(Output.TWITCH_AUTH_URL);
+                    Util.logAndPrint(logger, Output.OPEN_LINK_MESSAGE, Level.INFO);
+                    Util.logAndPrint(logger, Output.TWITCH_AUTH_URL, Level.INFO);
                     AuthServer.run();
                     return true;
                 case "n":
-                    System.out.println(Output.SKIPPING_TWITCH_SETUP);
+                    Util.logAndPrint(logger, Output.SKIPPING_TWITCH_SETUP, Level.INFO);
                     return false;
                 default:
-                    System.out.println(Errors.INVALID_INPUT);
+                    Util.logAndPrint(logger, Errors.INVALID_INPUT, Level.ERROR);
             }
         }
     }

@@ -4,8 +4,13 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 import simplexity.config.SimplexityFileHandler;
+import simplexity.config.TTSConfig;
 import simplexity.messages.Errors;
+import simplexity.util.Util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,6 +20,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class AuthHandler implements HttpHandler {
+    private static final Logger logger = LoggerFactory.getLogger(AuthHandler.class);
     @Override
     public void handle(HttpExchange exchange) {
         try {
@@ -29,10 +35,19 @@ public class AuthHandler implements HttpHandler {
 
             if (!twitchCode.isEmpty()) {
                 // Exchange the authorization code for an access token
-                String clientId = "";
-                String clientSecret = "";
+                String clientId = TTSConfig.getInstance().getTwitchAppClientId();
+                String clientSecret = TTSConfig.getInstance().getTwitchAppClientSecret();
                 String redirectUri = "http://localhost:3000";
                 String tokenUrl = "https://id.twitch.tv/oauth2/token";
+
+                if (clientId == null || clientSecret == null || clientId.isEmpty() || clientSecret.isEmpty()) {
+                    String errorResponse = "<h1>Twitch app credentials not found!</h1>";
+                    exchange.sendResponseHeaders(500, errorResponse.length());
+                    OutputStream os = exchange.getResponseBody();
+                    os.write(errorResponse.getBytes());
+                    os.close();
+                    return;
+                }
 
                 URL url = new URL(tokenUrl);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -85,7 +100,7 @@ public class AuthHandler implements HttpHandler {
                 os.close();
             }
         } catch (IOException | JSONException e) {
-            System.out.println(Errors.CAUGHT_EXCEPTION.replace("%error%", e.getMessage()));
+            Util.logAndPrint(logger, Errors.CAUGHT_EXCEPTION.replace("%error%", e.getMessage()), Level.TRACE);
         }
     }
 }

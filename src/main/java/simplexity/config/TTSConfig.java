@@ -5,18 +5,23 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.polly.model.VoiceId;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 import simplexity.messages.Errors;
+import simplexity.util.Util;
 
 import java.io.File;
 import java.util.HashMap;
 
 public class TTSConfig {
 
+    private static final Logger logger = LoggerFactory.getLogger(TTSConfig.class);
     private final HashMap<String, String> replaceText = new HashMap<>();
     private final HashMap<String, VoiceId> voicePrefixes = new HashMap<>();
     private Region awsRegion;
     private VoiceId defaultVoice;
-    private String awsAccessID, awsSecretKey, twitchChannel;
+    private String awsAccessID, awsSecretKey, twitchChannel, twitchAppClientId, twitchAppClientSecret;
     private boolean connectToTwitch;
     private String twitchOAuth;
     private TTSConfig(){}
@@ -86,7 +91,7 @@ public class TTSConfig {
                 VoiceId voiceId = VoiceId.fromValue(String.valueOf(entry.getValue().unwrapped()));
                 voicePrefixes.put(entry.getKey().replace("\"", ""), voiceId);
             } catch (IllegalArgumentException e) {
-                System.out.println(Errors.INVALID_VOICE.replace("%voice%", entry.getValue().unwrapped().toString()));
+                Util.logAndPrint(logger, Errors.INVALID_VOICE.replace("%voice%", entry.getValue().unwrapped().toString()), Level.ERROR);
             }
         });
     }
@@ -96,7 +101,7 @@ public class TTSConfig {
         try {
             awsRegion = Region.getRegion(Regions.valueOf(region));
         } catch (IllegalArgumentException e) {
-            System.out.println(Errors.INVALID_REGION.replace("%region%", region));
+            Util.logAndPrint(logger, Errors.INVALID_REGION.replace("%region%", region), Level.ERROR);
             awsRegion = Region.getRegion(Regions.US_EAST_1);
         }
     }
@@ -106,7 +111,7 @@ public class TTSConfig {
         try {
             defaultVoice = VoiceId.fromValue(voiceString);
         } catch (IllegalArgumentException e) {
-            System.out.println(Errors.INVALID_DEFAULT_VOICE.replace("%voice%", voiceString));
+            Util.logAndPrint(logger, Errors.INVALID_DEFAULT_VOICE.replace("%voice%", voiceString), Level.ERROR);
             defaultVoice = VoiceId.Brian;
         }
     }
@@ -115,6 +120,9 @@ public class TTSConfig {
         awsAccessID = config.getString("aws-access-id");
         awsSecretKey = config.getString("aws-secret-key");
         twitchChannel = config.getString("twitch-channel");
+        twitchAppClientId = config.getString("twitch-app-client-id");
+        twitchAppClientSecret = config.getString("twitch-app-client-secret");
+
     }
 
     private void reloadBooleans(Config config){
@@ -139,5 +147,13 @@ public class TTSConfig {
 
     public String getTwitchOAuth() {
         return twitchOAuth;
+    }
+
+    public String getTwitchAppClientId() {
+        return twitchAppClientId;
+    }
+
+    public String getTwitchAppClientSecret() {
+        return twitchAppClientSecret;
     }
 }

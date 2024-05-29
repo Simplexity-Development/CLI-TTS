@@ -2,9 +2,6 @@ package simplexity.commands;
 
 import simplexity.Main;
 import simplexity.messages.Output;
-import simplexity.util.ConsoleColors;
-
-import java.util.Arrays;
 
 public class HelpCommand extends Command{
     public HelpCommand(String name, String usage) {

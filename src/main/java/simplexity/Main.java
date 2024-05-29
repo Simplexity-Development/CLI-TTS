@@ -1,6 +1,8 @@
 package simplexity;
 
 import com.amazonaws.regions.Region;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import simplexity.amazon.PollyHandler;
 import simplexity.amazon.SpeechHandler;
 import simplexity.commands.CommandManager;
@@ -8,15 +10,14 @@ import simplexity.commands.ExitCommand;
 import simplexity.commands.HelpCommand;
 import simplexity.commands.ReloadCommand;
 import simplexity.config.TTSConfig;
-import simplexity.httpserver.AuthServer;
 import simplexity.messages.Errors;
-import simplexity.messages.Output;
 import simplexity.twitch.TwitchClientHandler;
 import simplexity.twitch.TwitchSetup;
 
 import java.util.Scanner;
 
 public class Main {
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
     private static CommandManager commandManager;
     private static PollyHandler pollyHandler;
     private static SpeechHandler speechHandler;
@@ -25,6 +26,7 @@ public class Main {
     public static Scanner scanner;
 
     public static void main(String[] args) {
+        logger.info("Starting application");
         scanner = new Scanner(System.in);
         commandManager = new CommandManager();
         registerCommands(commandManager);
@@ -36,6 +38,7 @@ public class Main {
         twitchSetup.setup();
         twitchClientHandler.setupClient();
         twitchClientHandler.getTwitchClient().getChat().joinChannel("RhythmWeHear");
+
         while (true) {
             String input = scanner.nextLine();
             if (input.equals("--exit")) {
@@ -43,6 +46,7 @@ public class Main {
             }
             if (!commandManager.runCommand(input)) {
                 twitchClientHandler.getTwitchClient().getChat().sendMessage("RhythmWeHear", input);
+
                 speechHandler.processSpeech(input);
             } else {
                 System.out.println("command executed");
@@ -77,7 +81,6 @@ public class Main {
         }
         return pollyHandler;
     }
-
 
 
     public static PollyHandler getPollyHandler() {
