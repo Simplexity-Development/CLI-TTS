@@ -34,36 +34,47 @@ References:
 - [Amazon Polly Description of Limits/Price](https://aws.amazon.com/polly/pricing/)
 - [Setting up a user and how to use IAM](https://docs.aws.amazon.com/signer/latest/developerguide/iam-setup.html)
 
+### Twitch
+In order to use this to interface with twitch, you will need to create an application on [Twitch's Dev Console](https://dev.twitch.tv/console)
+![Twitch Dev Console Landing Page](github/resources/twitch_application_registration_landing_page.png)
+
+![Twitch Dev Console 'register your application' page](github/resources/twitch_application_registration.png)
+
+Once you have created an application, you will be given a client ID and a Client Secret, you will place these in your `tts-config.conf`
 ### Default configuration
 
 ```HOCON
-aws-region = "US_EAST_1"
-default-voice = "Kimberly"
-aws-access-id = ""
-aws-access-secret = ""
+aws-region= "US_EAST_1"
+aws-access-id= ""
+aws-secret-key= ""
+connect-to-twitch= false
+twitch-channel= ""
+twitch-app-client-id= ""
+twitch-app-client-secret= ""
 replace-text {
-  "**" = "<prosody volume=\"x-loud\" pitch=\"low\" rate=\"slow\">"
-  "/*" = "</prosody>"
-  "*/" = "</prosody>"
-  "~~" = "<amazon:effect name=\"whispered\">"
-  "/~" = "</amazon:effect>"
-  "~/" = "</amazon:effect>"
-  "__" = "<emphasis level=\"strong\">"
-  "/_" = "</emphasis>"
-  "_/" = "</emphasis>"
-  "++" = "<prosody volume=\"x-loud\" rate=\"x-fast\" pitch=\"x-high\">"
-  "/+" = "</prosody>"
-  "+/" = "</prosody>"
-  "!!" = "<say-as interpret-as=\"expletive\">"
-  "/!" = "</say-as>"
-  "!/" = "</say-as>"
-  " - " = "<break time=\"300ms\"/>"
-  "<3" = "heart emoji"
+  "**"= "<prosody volume=\"x-loud\" pitch=\"low\" rate=\"slow\">"
+  "/*"= "</prosody>"
+  "*/"= "</prosody>"
+  "~~"= "<amazon:effect name=\"whispered\">"
+  "/~"= "</amazon:effect>"
+  "~/"= "</amazon:effect>"
+  "__"= "<emphasis level=\"strong\">"
+  "/_"= "</emphasis>"
+  "_/"= "</emphasis>"
+  "++"= "<prosody volume=\"x-loud\" rate=\"x-fast\" pitch=\"x-high\">"
+  "/+"= "</prosody>"
+  "+/"= "</prosody>"
+  "!!"= "<say-as interpret-as=\"expletive\">"
+  "/!"= "</say-as>"
+  "!/"= "</say-as>"
+  " - "= "<break time=\"300ms\"/>"
+  "<3"= "heart emoji"
 }
+default-voice= "Brian"
 voice-prefixes {
-  "Sal:" = "Salli"
-  "Kim:" = "Kimberly"
-  "Bri:" = "Brian"
+  "Sal:"= "Salli"
+  "Kim:"= "Kimberly"
+  "Bri:"= "Brian"
 }
 ```
 
