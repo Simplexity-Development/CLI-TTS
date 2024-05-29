@@ -8,8 +8,11 @@ import simplexity.commands.ExitCommand;
 import simplexity.commands.HelpCommand;
 import simplexity.commands.ReloadCommand;
 import simplexity.config.TTSConfig;
+import simplexity.httpserver.AuthServer;
 import simplexity.messages.Errors;
+import simplexity.messages.Output;
 import simplexity.twitch.TwitchClientHandler;
+import simplexity.twitch.TwitchSetup;
 
 import java.util.Scanner;
 
@@ -18,24 +21,28 @@ public class Main {
     private static PollyHandler pollyHandler;
     private static SpeechHandler speechHandler;
     private static TwitchClientHandler twitchClientHandler;
+    private static TwitchSetup twitchSetup;
+    public static Scanner scanner;
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        scanner = new Scanner(System.in);
         commandManager = new CommandManager();
         registerCommands(commandManager);
         TTSConfig.getInstance().reloadConfig();
         pollyHandler = createPollyHandler();
         speechHandler = new SpeechHandler();
         twitchClientHandler = new TwitchClientHandler();
+        twitchSetup = new TwitchSetup();
+        twitchSetup.setup();
         twitchClientHandler.setupClient();
         twitchClientHandler.getTwitchClient().getChat().joinChannel("RhythmWeHear");
-        System.out.println(twitchClientHandler.getTwitchClient().getChat().sendMessage("RhythmWeHear", "Test"));
         while (true) {
             String input = scanner.nextLine();
             if (input.equals("--exit")) {
-                break;
+                return;
             }
             if (!commandManager.runCommand(input)) {
+                twitchClientHandler.getTwitchClient().getChat().sendMessage("RhythmWeHear", input);
                 speechHandler.processSpeech(input);
             } else {
                 System.out.println("command executed");

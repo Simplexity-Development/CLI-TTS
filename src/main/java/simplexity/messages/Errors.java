@@ -46,5 +46,25 @@ public class Errors {
             ERROR: %error%
             """ + ConsoleColors.RESET;
 
+    public static final String TWITCH_AUTH_NULL =
+            ConsoleColors.RED_BRIGHT + """
+            ERROR: Twitch auth is null
+            """ + ConsoleColors.RESET;
+
+    public static final String NO_CHANNEL_PROVIDED =
+            ConsoleColors.RED_BRIGHT + """
+            ERROR: You have set 'connect-to-twitch' to true but have not provided a channel to connect to.
+            """ + ConsoleColors.RESET;
+
+    public static final String NO_OAUTH_PROVIDED =
+            ConsoleColors.RED_BRIGHT + """
+            ERROR: You have set 'connect-to-twitch' to true but have not authorized this application to connect to twitch.
+            """ + ConsoleColors.RESET;
+
+    public static final String INVALID_INPUT =
+            ConsoleColors.RED_BRIGHT + """
+            ERROR: Invalid input
+            """ + ConsoleColors.RESET;
+
 
 }

@@ -40,10 +40,10 @@ public class SimplexityFileHandler {
         }
     }
 
-    public static void createTwitchFile(String authCode){
+    public static void createTwitchFile(String accessToken){
         File file = new File("twitch-oauth.conf");
         try (FileWriter writer = new FileWriter(file)) {
-            writer.write(ConfigDefaults.TWITCH_OAUTH.replace("%code%", authCode));
+            writer.write("twitch-oauth=\"" + accessToken + "\"");
         } catch (Exception e){
             System.out.println(Errors.CAUGHT_EXCEPTION.replace("%error%", e.getMessage()));
         }

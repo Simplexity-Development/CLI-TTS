@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public class AuthServer {
-
     public static HttpServer server;
 
     public static void run() {
@@ -17,6 +16,7 @@ public class AuthServer {
             System.out.println(Errors.CAUGHT_EXCEPTION.replace("%error%", exception.getMessage()));
         }
     }
+
     public static void stop() {
         server.stop(0);
     }
@@ -31,4 +31,6 @@ public class AuthServer {
             System.out.println(Errors.CAUGHT_EXCEPTION.replace("%error%", exception.getMessage()));
         }
     }
+
+
 }
