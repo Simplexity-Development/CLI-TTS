@@ -16,18 +16,17 @@ public class TwitchClientHandler {
     OAuth2Credential oAuth2Credential;
     TwitchClient twitchClient;
 
-    public boolean setupClient() {
+    public void setupClient() {
         String twitchOAuth = TTSConfig.getInstance().getTwitchOAuth();
         if (twitchOAuth == null || twitchOAuth.isEmpty()) {
             Util.logAndPrint(logger, Errors.NO_OAUTH_PROVIDED, Level.ERROR);
-            return false;
+            return;
         }
         oAuth2Credential = new OAuth2Credential("twitch", twitchOAuth);
         twitchClient = TwitchClientBuilder.builder()
                 .withEnableChat(true)
                 .withChatAccount(oAuth2Credential)
                 .build();
-        return true;
     }
 
     public TwitchClient getTwitchClient() {

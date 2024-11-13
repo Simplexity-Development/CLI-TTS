@@ -39,6 +39,7 @@ public class SimplexityFileHandler {
             writer.write(ConfigDefaults.TWITCH_CHANNEL);
             writer.write(ConfigDefaults.TWITCH_APP_CLIENT_ID);
             writer.write(ConfigDefaults.TWITCH_APP_CLIENT_SECRET);
+            writer.write(ConfigDefaults.TWITCH_APP_REDIRECT_URI);
             writer.write(ConfigDefaults.REPLACE_TEXT);
             writer.write(ConfigDefaults.DEFAULT_VOICE);
             writer.write(ConfigDefaults.VOICE_PREFIXES);

@@ -21,7 +21,7 @@ public class TTSConfig {
     private final HashMap<String, VoiceId> voicePrefixes = new HashMap<>();
     private Region awsRegion;
     private VoiceId defaultVoice;
-    private String awsAccessID, awsSecretKey, twitchChannel, twitchAppClientId, twitchAppClientSecret;
+    private String awsAccessID, awsSecretKey, twitchChannel, twitchAppClientId, twitchAppClientSecret, twitchAppRedirectURI;
     private boolean connectToTwitch;
     private String twitchOAuth;
     private TTSConfig(){}
@@ -122,6 +122,7 @@ public class TTSConfig {
         twitchChannel = config.getString("twitch-channel");
         twitchAppClientId = config.getString("twitch-app-client-id");
         twitchAppClientSecret = config.getString("twitch-app-client-secret");
+        twitchAppRedirectURI = config.getString("twitch-app-redirect-uri");
 
     }
 
@@ -155,5 +156,9 @@ public class TTSConfig {
 
     public String getTwitchAppClientSecret() {
         return twitchAppClientSecret;
+    }
+
+    public String getTwitchAppRedirectURI() {
+        return twitchAppRedirectURI;
     }
 }

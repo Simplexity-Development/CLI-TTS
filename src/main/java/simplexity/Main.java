@@ -1,6 +1,5 @@
 package simplexity;
 
-import com.amazonaws.regions.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import simplexity.amazon.PollyHandler;
@@ -10,19 +9,19 @@ import simplexity.commands.ExitCommand;
 import simplexity.commands.HelpCommand;
 import simplexity.commands.ReloadCommand;
 import simplexity.config.TTSConfig;
-import simplexity.messages.Errors;
+import simplexity.setup.PollySetup;
 import simplexity.twitch.TwitchClientHandler;
-import simplexity.twitch.TwitchSetup;
+import simplexity.setup.TwitchSetup;
 
 import java.util.Scanner;
 
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
     private static CommandManager commandManager;
-    private static PollyHandler pollyHandler;
+    public static PollyHandler pollyHandler;
     private static SpeechHandler speechHandler;
     private static TwitchClientHandler twitchClientHandler;
-    private static TwitchSetup twitchSetup;
+    private static boolean connectToTwitch;
     public static Scanner scanner;
 
     public static void main(String[] args) {
@@ -31,25 +30,18 @@ public class Main {
         commandManager = new CommandManager();
         registerCommands(commandManager);
         TTSConfig.getInstance().reloadConfig();
-        pollyHandler = createPollyHandler();
-        speechHandler = new SpeechHandler();
-        twitchClientHandler = new TwitchClientHandler();
-        twitchSetup = new TwitchSetup();
-        twitchSetup.setup();
-        twitchClientHandler.setupClient();
-        twitchClientHandler.getTwitchClient().getChat().joinChannel("RhythmWeHear");
-
+        PollySetup.setupPollyAndSpeech();
+        TwitchSetup.setup();
         while (true) {
             String input = scanner.nextLine();
             if (input.equals("--exit")) {
                 return;
             }
             if (!commandManager.runCommand(input)) {
-                twitchClientHandler.getTwitchClient().getChat().sendMessage("RhythmWeHear", input);
-
+                if (twitchClientHandler != null && connectToTwitch) {
+                    twitchClientHandler.getTwitchClient().getChat().sendMessage(TTSConfig.getInstance().getTwitchChannel(), input);
+                }
                 speechHandler.processSpeech(input);
-            } else {
-                System.out.println("command executed");
             }
         }
     }
@@ -64,26 +56,34 @@ public class Main {
         return commandManager;
     }
 
-    public static PollyHandler createPollyHandler() {
-        PollyHandler pollyHandler = null;
-        String awsAccessID = TTSConfig.getInstance().getAwsAccessID();
-        String awsSecretKey = TTSConfig.getInstance().getAwsSecretKey();
-        Region awsRegion = TTSConfig.getInstance().getAwsRegion();
-        if (awsAccessID.isEmpty() || awsSecretKey.isEmpty() || awsRegion == null) {
-            System.out.println(Errors.NULL_AWS_CREDENTIALS);
-            return null;
-        }
-        try {
-
-            pollyHandler = new PollyHandler(awsAccessID, awsSecretKey, awsRegion);
-        } catch (IllegalArgumentException e) {
-            System.out.println(Errors.NULL_AWS_CREDENTIALS);
-        }
+    public static PollyHandler getPollyHandler() {
         return pollyHandler;
     }
 
+    public static void setSpeechHandler(SpeechHandler speechHandlerToSet){
+        speechHandler = speechHandlerToSet;
+    }
 
-    public static PollyHandler getPollyHandler() {
-        return pollyHandler;
+    public static void setPollyHandler(PollyHandler pollyHandlerToSet){
+        pollyHandler = pollyHandlerToSet;
+    }
+
+    public static Scanner getScanner(){
+        return scanner;
+    }
+
+    public static void setConnectToTwitch(boolean connectToTwitch) {
+        Main.connectToTwitch = connectToTwitch;
+    }
+    public static boolean isConnectToTwitch() {
+        return connectToTwitch;
+    }
+
+    public static TwitchClientHandler getTwitchClientHandler() {
+        return twitchClientHandler;
+    }
+
+    public static void setTwitchClientHandler(TwitchClientHandler twitchClientHandlerToSet) {
+        twitchClientHandler = twitchClientHandlerToSet;
     }
 }

@@ -8,6 +8,7 @@ public class ConfigDefaults {
     public static final String CONNECT_TO_TWITCH = "connect-to-twitch= false\n";
     public static final String TWITCH_APP_CLIENT_ID = "twitch-app-client-id= \"\"\n";
     public static final String TWITCH_APP_CLIENT_SECRET = "twitch-app-client-secret= \"\"\n";
+    public static final String TWITCH_APP_REDIRECT_URI = "twitch-app-redirect-uri= \"\"\n";
     public static final String REPLACE_TEXT = """
             replace-text {
               "**"= "<prosody volume=\\"x-loud\\" pitch=\\"low\\" rate=\\"slow\\">"

@@ -26,9 +26,7 @@ public class SpeechHandler {
     }
 
     public void processSpeech(String text) {
-        System.out.println(text);
         String processedText = replaceText(text);
-        System.out.println(processedText);
         boolean useSSML = !text.equals(processedText);
         InputStream speechStream;
         if (useSSML) {

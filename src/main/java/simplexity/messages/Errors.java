@@ -66,5 +66,10 @@ public class Errors {
             ERROR: Invalid input
             """ + ConsoleColors.RESET;
 
+    public static final String NO_APPLICATION_ID_PROVIDED =
+            ConsoleColors.RED_BRIGHT + """
+            ERROR: You have set 'connect-to-twitch' to true but have not provided an application ID/application Secret.
+            """ + ConsoleColors.RESET;
+
 
 }
