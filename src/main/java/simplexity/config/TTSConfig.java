@@ -21,9 +21,8 @@ public class TTSConfig {
     private final HashMap<String, VoiceId> voicePrefixes = new HashMap<>();
     private Region awsRegion;
     private VoiceId defaultVoice;
-    private String awsAccessID, awsSecretKey, twitchChannel, twitchAppClientId, twitchAppClientSecret, twitchAppRedirectURI;
-    private boolean connectToTwitch;
-    private String twitchOAuth;
+    private String awsAccessID, awsSecretKey;
+
     private TTSConfig(){}
     private static TTSConfig instance;
     public static TTSConfig getInstance(){
@@ -52,28 +51,16 @@ public class TTSConfig {
         reloadRegion(config);
         reloadDefaultVoice(config);
         reloadStrings(config);
-        reloadBooleans(config);
-        reloadTwitchOAuth();
+
     }
 
-    public void reloadTwitchOAuth(){
-        Config config = initializeTwitchAuth();
-        if (config == null) return;
-        twitchOAuth = config.getString("twitch-oauth");
-    }
+
 
     private Config initializeConfig() {
         File configFile = SimplexityFileHandler.getInstance().createOrLoadConfigFile();
         return ConfigFactory.parseFile(configFile).resolve();
     }
 
-    private Config initializeTwitchAuth(){
-        File oauthFile = new File("twitch-oauth.conf");
-        if(oauthFile.exists()){
-            return ConfigFactory.parseFile(oauthFile).resolve();
-        }
-        return null;
-    }
 
     private void reloadReplaceText(Config config){
         replaceText.clear();
@@ -119,16 +106,9 @@ public class TTSConfig {
     private void reloadStrings(Config config){
         awsAccessID = config.getString("aws-access-id");
         awsSecretKey = config.getString("aws-secret-key");
-        twitchChannel = config.getString("twitch-channel");
-        twitchAppClientId = config.getString("twitch-app-client-id");
-        twitchAppClientSecret = config.getString("twitch-app-client-secret");
-        twitchAppRedirectURI = config.getString("twitch-app-redirect-uri");
 
     }
 
-    private void reloadBooleans(Config config){
-        connectToTwitch = config.getBoolean("connect-to-twitch");
-    }
 
     public String getAwsAccessID() {
         return awsAccessID;
@@ -136,29 +116,5 @@ public class TTSConfig {
 
     public String getAwsSecretKey() {
         return awsSecretKey;
-    }
-
-    public String getTwitchChannel() {
-        return twitchChannel;
-    }
-
-    public boolean isConnectToTwitch() {
-        return connectToTwitch;
-    }
-
-    public String getTwitchOAuth() {
-        return twitchOAuth;
-    }
-
-    public String getTwitchAppClientId() {
-        return twitchAppClientId;
-    }
-
-    public String getTwitchAppClientSecret() {
-        return twitchAppClientSecret;
-    }
-
-    public String getTwitchAppRedirectURI() {
-        return twitchAppRedirectURI;
     }
 }

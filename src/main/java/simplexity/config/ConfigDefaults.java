@@ -4,11 +4,6 @@ public class ConfigDefaults {
     public static final String AWS_REGION = "aws-region= \"US_EAST_1\"\n";
     public static final String AWS_ACCESS_KEY = "aws-access-id= \"\"\n";
     public static final String AWS_SECRET_KEY = "aws-secret-key= \"\"\n";
-    public static final String TWITCH_CHANNEL = "twitch-channel= \"\"\n";
-    public static final String CONNECT_TO_TWITCH = "connect-to-twitch= false\n";
-    public static final String TWITCH_APP_CLIENT_ID = "twitch-app-client-id= \"\"\n";
-    public static final String TWITCH_APP_CLIENT_SECRET = "twitch-app-client-secret= \"\"\n";
-    public static final String TWITCH_APP_REDIRECT_URI = "twitch-app-redirect-uri= \"\"\n";
     public static final String REPLACE_TEXT = """
             replace-text {
               "**"= "<prosody volume=\\"x-loud\\" pitch=\\"low\\" rate=\\"slow\\">"

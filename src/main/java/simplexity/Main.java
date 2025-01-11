@@ -10,8 +10,6 @@ import simplexity.commands.HelpCommand;
 import simplexity.commands.ReloadCommand;
 import simplexity.config.TTSConfig;
 import simplexity.setup.PollySetup;
-import simplexity.twitch.TwitchClientHandler;
-import simplexity.setup.TwitchSetup;
 
 import java.util.Scanner;
 
@@ -20,8 +18,6 @@ public class Main {
     private static CommandManager commandManager;
     public static PollyHandler pollyHandler;
     private static SpeechHandler speechHandler;
-    private static TwitchClientHandler twitchClientHandler;
-    private static boolean connectToTwitch;
     public static Scanner scanner;
 
     public static void main(String[] args) {
@@ -31,16 +27,12 @@ public class Main {
         registerCommands(commandManager);
         TTSConfig.getInstance().reloadConfig();
         PollySetup.setupPollyAndSpeech();
-        TwitchSetup.setup();
         while (true) {
             String input = scanner.nextLine();
             if (input.equals("--exit")) {
                 return;
             }
             if (!commandManager.runCommand(input)) {
-                if (twitchClientHandler != null && connectToTwitch) {
-                    twitchClientHandler.getTwitchClient().getChat().sendMessage(TTSConfig.getInstance().getTwitchChannel(), input);
-                }
                 speechHandler.processSpeech(input);
             }
         }
@@ -72,18 +64,4 @@ public class Main {
         return scanner;
     }
 
-    public static void setConnectToTwitch(boolean connectToTwitch) {
-        Main.connectToTwitch = connectToTwitch;
-    }
-    public static boolean isConnectToTwitch() {
-        return connectToTwitch;
-    }
-
-    public static TwitchClientHandler getTwitchClientHandler() {
-        return twitchClientHandler;
-    }
-
-    public static void setTwitchClientHandler(TwitchClientHandler twitchClientHandlerToSet) {
-        twitchClientHandler = twitchClientHandlerToSet;
-    }
 }

@@ -67,6 +67,7 @@ public class SpeechHandler {
             return synthesizeSpeechResult.getAudioStream();
         } catch (RuntimeException exception) {
             Util.logAndPrint(logger, Errors.CAUGHT_EXCEPTION.replace("%error%", exception.getMessage()), Level.ERROR);
+            Util.logAndPrint(logger, Errors.MESSAGE_NOT_PARSABLE.replace("%message%", text), Level.ERROR);
             return null;
         }
     }

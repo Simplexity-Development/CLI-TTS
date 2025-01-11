@@ -46,30 +46,15 @@ public class Errors {
             ERROR: %error%
             """ + ConsoleColors.RESET;
 
-    public static final String TWITCH_AUTH_NULL =
-            ConsoleColors.RED_BRIGHT + """
-            ERROR: Twitch auth is null
-            """ + ConsoleColors.RESET;
-
-    public static final String NO_CHANNEL_PROVIDED =
-            ConsoleColors.RED_BRIGHT + """
-            ERROR: You have set 'connect-to-twitch' to true but have not provided a channel to connect to.
-            """ + ConsoleColors.RESET;
-
-    public static final String NO_OAUTH_PROVIDED =
-            ConsoleColors.RED_BRIGHT + """
-            ERROR: You have set 'connect-to-twitch' to true but have not authorized this application to connect to twitch.
-            """ + ConsoleColors.RESET;
 
     public static final String INVALID_INPUT =
             ConsoleColors.RED_BRIGHT + """
             ERROR: Invalid input
             """ + ConsoleColors.RESET;
 
-    public static final String NO_APPLICATION_ID_PROVIDED =
+    public static final String MESSAGE_NOT_PARSABLE =
             ConsoleColors.RED_BRIGHT + """
-            ERROR: You have set 'connect-to-twitch' to true but have not provided an application ID/application Secret.
+            ERROR: Message was not parsable, attempted to send: %message%
             """ + ConsoleColors.RESET;
-
 
 }
