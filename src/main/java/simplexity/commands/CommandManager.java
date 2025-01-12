@@ -22,7 +22,6 @@ public class CommandManager {
             return true;
         }
         if (!commands.containsKey(command)){
-            Util.logAndPrint(logger, "Commands does not contain key " + command, Level.INFO);
             return false;
         }
         commands.get(command).execute();

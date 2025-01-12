@@ -38,6 +38,7 @@ public class SimplexityFileHandler {
             writer.write(ConfigDefaults.REPLACE_TEXT);
             writer.write(ConfigDefaults.DEFAULT_VOICE);
             writer.write(ConfigDefaults.VOICE_PREFIXES);
+            writer.write(ConfigDefaults.SERVER_PORT);
         } catch (Exception exception){
             Util.logAndPrint(logger, Errors.CAUGHT_EXCEPTION.replace("%error%", exception.getMessage()), Level.ERROR);
         }

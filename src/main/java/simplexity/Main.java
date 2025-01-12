@@ -9,6 +9,7 @@ import simplexity.commands.ExitCommand;
 import simplexity.commands.HelpCommand;
 import simplexity.commands.ReloadCommand;
 import simplexity.config.TTSConfig;
+import simplexity.httpserver.LocalServer;
 import simplexity.setup.PollySetup;
 
 import java.util.Scanner;
@@ -27,6 +28,7 @@ public class Main {
         registerCommands(commandManager);
         TTSConfig.getInstance().reloadConfig();
         PollySetup.setupPollyAndSpeech();
+        LocalServer.run();
         while (true) {
             String input = scanner.nextLine();
             if (input.equals("--exit")) {

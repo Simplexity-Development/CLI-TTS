@@ -22,6 +22,7 @@ public class TTSConfig {
     private Region awsRegion;
     private VoiceId defaultVoice;
     private String awsAccessID, awsSecretKey;
+    private int port;
 
     private TTSConfig(){}
     private static TTSConfig instance;
@@ -51,6 +52,7 @@ public class TTSConfig {
         reloadRegion(config);
         reloadDefaultVoice(config);
         reloadStrings(config);
+        reloadInts(config);
 
     }
 
@@ -109,6 +111,10 @@ public class TTSConfig {
 
     }
 
+    private void reloadInts(Config config){
+        port = config.getInt("server-port");
+    }
+
 
     public String getAwsAccessID() {
         return awsAccessID;
@@ -116,5 +122,9 @@ public class TTSConfig {
 
     public String getAwsSecretKey() {
         return awsSecretKey;
+    }
+
+    public int getPort() {
+        return port;
     }
 }

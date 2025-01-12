@@ -1,7 +1,7 @@
 package simplexity.commands;
 
 import org.slf4j.event.Level;
-import simplexity.httpserver.AuthServer;
+import simplexity.httpserver.LocalServer;
 import simplexity.messages.Output;
 import simplexity.util.Util;
 
@@ -14,7 +14,7 @@ public class ExitCommand extends Command {
     @Override
     public void execute() {
         Util.logAndPrint(logger, Output.SHUTTING_DOWN, Level.INFO);
-        AuthServer.stop();
+        LocalServer.stop();
         System.exit(0);
     }
 }
