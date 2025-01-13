@@ -2,6 +2,7 @@ package simplexity;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 import simplexity.amazon.PollyHandler;
 import simplexity.amazon.SpeechHandler;
 import simplexity.commands.CommandManager;
@@ -11,6 +12,7 @@ import simplexity.commands.ReloadCommand;
 import simplexity.config.TTSConfig;
 import simplexity.httpserver.LocalServer;
 import simplexity.setup.PollySetup;
+import simplexity.util.Util;
 
 import java.util.Scanner;
 
@@ -20,20 +22,18 @@ public class Main {
     public static PollyHandler pollyHandler;
     private static SpeechHandler speechHandler;
     public static Scanner scanner;
+    public static boolean runApp = true;
 
     public static void main(String[] args) {
-        logger.info("Starting application");
+        Util.log(logger, "Starting application", Level.INFO);
         scanner = new Scanner(System.in);
         commandManager = new CommandManager();
         registerCommands(commandManager);
         TTSConfig.getInstance().reloadConfig();
         PollySetup.setupPollyAndSpeech();
         LocalServer.run();
-        while (true) {
+        while (runApp) {
             String input = scanner.nextLine();
-            if (input.equals("--exit")) {
-                return;
-            }
             if (!commandManager.runCommand(input)) {
                 speechHandler.processSpeech(input);
             }

@@ -13,6 +13,7 @@ public class CommandManager {
     private static final Logger logger = LoggerFactory.getLogger(CommandManager.class);
 
     public void registerCommand(Command command) {
+        Util.log(logger, "Registering command: " + command.name, Level.INFO);
         commands.put(command.getName(), command);
     }
 

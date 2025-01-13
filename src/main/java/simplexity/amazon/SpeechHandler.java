@@ -23,11 +23,19 @@ public class SpeechHandler {
 
     public SpeechHandler() {
         this.voiceId = TTSConfig.getInstance().getDefaultVoice();
+        Util.log(logger, "Initialized SpeechHandler with default voice: " + voiceId.toString(), Level.INFO);
     }
 
+    /**
+     * Processes the given text, optionally replacing it based on configurations,
+     * and synthesizes and plays the speech.
+     */
     public void processSpeech(String text) {
+        // Replace text and determine if SSML is needed
         String processedText = replaceText(text);
         boolean useSSML = !text.equals(processedText);
+
+        //Synthesize speech
         InputStream speechStream;
         if (useSSML) {
             speechStream = synthesizeSSMLSpeech(processedText, voiceId);
@@ -38,49 +46,63 @@ public class SpeechHandler {
             Util.logAndPrint(logger, Errors.CAUGHT_EXCEPTION.replace("%error%", "Speech stream is null"), Level.ERROR);
             return;
         }
+
+        //play it
         playSpeech(speechStream);
     }
 
+    /**
+     * Replaces text based on replacement mappings and updates the voice if a prefix is matched.
+     */
+
     public String replaceText(String text) {
-        for (String key : TTSConfig.getInstance().getReplaceText().keySet()) {
-            text = text.replace(key, TTSConfig.getInstance().getReplaceText().get(key));
+        TTSConfig ttsConfig = TTSConfig.getInstance();
+        for (String key : ttsConfig.getReplaceText().keySet()) {
+            text = text.replace(key, ttsConfig.getReplaceText().get(key));
         }
-        for (String key : TTSConfig.getInstance().getVoicePrefixes().keySet()) {
+        for (String key : ttsConfig.getVoicePrefixes().keySet()) {
             if (text.startsWith(key)) {
                 text = text.replace(key, "");
-                voiceId = TTSConfig.getInstance().getVoicePrefixes().get(key);
+                voiceId = ttsConfig.getVoicePrefixes().get(key);
             }
         }
         return text;
     }
 
     public InputStream synthesizeSSMLSpeech(String text, VoiceId voice) {
-        text = "<speak>" + text + "</speak>";
-        SynthesizeSpeechRequest synthesizeSpeechRequest;
+        String ssmlText = "<speak>" + text + "</speak>";
         try {
-            synthesizeSpeechRequest = new SynthesizeSpeechRequest()
-                    .withText(text)
+            SynthesizeSpeechRequest request = new SynthesizeSpeechRequest()
+                    .withText(ssmlText)
                     .withTextType(TextType.Ssml)
                     .withVoiceId(voice)
                     .withOutputFormat(OutputFormat.Mp3);
-            SynthesizeSpeechResult synthesizeSpeechResult = Main.getPollyHandler().getPolly().synthesizeSpeech(synthesizeSpeechRequest);
-            return synthesizeSpeechResult.getAudioStream();
+            SynthesizeSpeechResult result = Main.getPollyHandler().getPolly().synthesizeSpeech(request);
+            return result.getAudioStream();
         } catch (RuntimeException exception) {
-            Util.logAndPrint(logger, Errors.CAUGHT_EXCEPTION.replace("%error%", exception.getMessage()), Level.ERROR);
-            Util.logAndPrint(logger, Errors.MESSAGE_NOT_PARSABLE.replace("%message%", text), Level.ERROR);
+            logSynthesisError(exception, ssmlText);
             return null;
         }
     }
 
     public InputStream synthesizeSpeech(String text, VoiceId voice) {
-        SynthesizeSpeechRequest synthesizeSpeechRequest = new SynthesizeSpeechRequest()
-                .withText(text)
-                .withVoiceId(voice)
-                .withOutputFormat(OutputFormat.Mp3);
-        SynthesizeSpeechResult synthesizeSpeechResult = Main.getPollyHandler().getPolly().synthesizeSpeech(synthesizeSpeechRequest);
-        return synthesizeSpeechResult.getAudioStream();
+        try {
+            SynthesizeSpeechRequest request = new SynthesizeSpeechRequest()
+                    .withText(text)
+                    .withVoiceId(voice)
+                    .withOutputFormat(OutputFormat.Mp3);
+            SynthesizeSpeechResult result = Main.getPollyHandler().getPolly().synthesizeSpeech(request);
+            return result.getAudioStream();
+        } catch (RuntimeException exception) {
+            logSynthesisError(exception, text);
+            return null;
+        }
     }
 
+    /**
+     * Plays the text as speech
+     *
+     */
     public void playSpeech(InputStream speechStream) {
         AdvancedPlayer player;
         try {
@@ -89,5 +111,13 @@ public class SpeechHandler {
         } catch (Exception exception) {
             Util.logAndPrint(logger, Errors.CAUGHT_EXCEPTION.replace("%error%", exception.getMessage()), Level.ERROR);
         }
+    }
+
+    /**
+     * Logs errors during speech synthesis.
+     */
+    private void logSynthesisError(Exception e, String text) {
+        Util.logAndPrint(logger, Errors.CAUGHT_EXCEPTION.replace("%error%", e.getMessage()), Level.ERROR);
+        Util.logAndPrint(logger, Errors.MESSAGE_NOT_PARSABLE.replace("%message%", text), Level.ERROR);
     }
 }

@@ -15,5 +15,4 @@ public class Output {
             ConsoleColors.YELLOW_BRIGHT + "Please save your AWS credentials in tts-config.conf, then click enter to continue"
             + ConsoleColors.RESET;
     public static final String SHUTTING_DOWN = ConsoleColors.YELLOW_BRIGHT + "CLI Text To Speech is closing..." + ConsoleColors.RESET;
-
 }
