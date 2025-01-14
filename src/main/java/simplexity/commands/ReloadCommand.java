@@ -1,7 +1,7 @@
 package simplexity.commands;
 
 import org.slf4j.event.Level;
-import simplexity.config.TTSConfig;
+import simplexity.config.config.TTSConfig;
 import simplexity.httpserver.LocalServer;
 import simplexity.messages.Output;
 import simplexity.util.Util;

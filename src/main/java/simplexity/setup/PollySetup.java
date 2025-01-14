@@ -7,7 +7,8 @@ import org.slf4j.event.Level;
 import simplexity.Main;
 import simplexity.amazon.PollyHandler;
 import simplexity.amazon.SpeechHandler;
-import simplexity.config.TTSConfig;
+import simplexity.config.config.AwsConfig;
+import simplexity.config.config.TTSConfig;
 import simplexity.messages.Errors;
 import simplexity.messages.Output;
 import simplexity.util.Util;
@@ -24,9 +25,9 @@ public class PollySetup {
     }
     public static PollyHandler createPollyHandler() {
         PollyHandler pollyHandler = null;
-        String awsAccessID = TTSConfig.getInstance().getAwsAccessID();
-        String awsSecretKey = TTSConfig.getInstance().getAwsSecretKey();
-        Region awsRegion = TTSConfig.getInstance().getAwsRegion();
+        String awsAccessID = AwsConfig.getInstance().getAwsAccessID();
+        String awsSecretKey = AwsConfig.getInstance().getAwsSecretKey();
+        Region awsRegion = AwsConfig.getInstance().getAwsRegion();
         if (awsAccessID.isEmpty() || awsSecretKey.isEmpty() || awsRegion == null) {
             System.out.println(Errors.NULL_AWS_CREDENTIALS);
             return null;

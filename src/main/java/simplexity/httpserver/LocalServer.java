@@ -1,10 +1,9 @@
 package simplexity.httpserver;
 
-import com.sun.net.httpserver.HttpHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
-import simplexity.config.TTSConfig;
+import simplexity.config.config.TTSConfig;
 import simplexity.messages.Errors;
 import simplexity.util.Util;
 

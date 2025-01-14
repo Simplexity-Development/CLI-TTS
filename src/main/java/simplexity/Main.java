@@ -9,16 +9,22 @@ import simplexity.commands.CommandManager;
 import simplexity.commands.ExitCommand;
 import simplexity.commands.HelpCommand;
 import simplexity.commands.ReloadCommand;
-import simplexity.config.TTSConfig;
+import simplexity.config.AbstractConfig;
+import simplexity.config.config.AwsConfig;
+import simplexity.config.config.ReplaceTextConfig;
+import simplexity.config.config.TTSConfig;
 import simplexity.httpserver.LocalServer;
 import simplexity.setup.PollySetup;
+import simplexity.util.ColorTags;
 import simplexity.util.Util;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
     private static CommandManager commandManager;
+    private static ArrayList<AbstractConfig> configs = new ArrayList<>();
     public static PollyHandler pollyHandler;
     private static SpeechHandler speechHandler;
     public static Scanner scanner;
@@ -29,9 +35,10 @@ public class Main {
         scanner = new Scanner(System.in);
         commandManager = new CommandManager();
         registerCommands(commandManager);
-        TTSConfig.getInstance().reloadConfig();
+        setupConfigs();
         PollySetup.setupPollyAndSpeech();
         LocalServer.run();
+        System.out.println(ColorTags.parse("<red>TEST</red> <bold> THIS IS A TEST</bold>"));
         while (runApp) {
             String input = scanner.nextLine();
             if (!commandManager.runCommand(input)) {
@@ -44,6 +51,15 @@ public class Main {
         commandManager.registerCommand(new HelpCommand("--help", "Displays the help messages"));
         commandManager.registerCommand(new ExitCommand("--exit", "Terminates the program"));
         commandManager.registerCommand(new ReloadCommand("--reload", "Reloads the configuration"));
+    }
+
+    private static void setupConfigs(){
+        AwsConfig awsConfig = new AwsConfig();
+        configs.add(awsConfig);
+        TTSConfig ttsConfig = new TTSConfig();
+        configs.add(ttsConfig);
+        ReplaceTextConfig replaceTextConfig = new ReplaceTextConfig();
+        configs.add(replaceTextConfig);
     }
 
     public static CommandManager getCommandManager() {

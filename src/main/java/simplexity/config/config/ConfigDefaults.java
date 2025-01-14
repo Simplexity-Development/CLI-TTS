@@ -1,4 +1,4 @@
-package simplexity.config;
+package simplexity.config.config;
 
 public class ConfigDefaults {
     public static final String AWS_REGION = "aws-region= \"US_EAST_1\"\n";
