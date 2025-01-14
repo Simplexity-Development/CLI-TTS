@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 import simplexity.config.config.TTSConfig;
-import simplexity.messages.Errors;
-import simplexity.util.Util;
+import simplexity.config.locale.Message;
+import simplexity.util.Logging;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -18,7 +18,7 @@ public class LocalServer {
         try {
             setupServer();
         } catch (Exception exception) {
-            Util.logAndPrint(logger, Errors.CAUGHT_EXCEPTION.replace("%error%", exception.getMessage()), Level.TRACE);
+            Logging.logAndPrint(logger, Message.GENERAL_ERROR.getMessage().replace("%error%", exception.getMessage()), Level.TRACE);
         }
     }
 
@@ -34,7 +34,7 @@ public class LocalServer {
             server.createContext("/", new ChatHandler());
             server.start();
         } catch (IOException exception) {
-            Util.logAndPrint(logger, Errors.CAUGHT_EXCEPTION.replace("%error%", exception.getMessage()), Level.TRACE);
+            Logging.logAndPrint(logger, Message.GENERAL_ERROR.getMessage().replace("%error%", exception.getMessage()), Level.TRACE);
         }
     }
 

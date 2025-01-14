@@ -5,7 +5,7 @@ import com.typesafe.config.ConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
-import simplexity.util.Util;
+import simplexity.util.Logging;
 
 import java.io.File;
 
@@ -19,28 +19,28 @@ public abstract class AbstractConfig {
     }
 
     private void loadConfig(String configPath, String folderPath) {
-        Util.log(logger, "Loading configuration from directory: " + folderPath + ", file:" + configPath, Level.INFO);
+        Logging.log(logger, "Loading configuration from directory: " + folderPath + ", file:" + configPath, Level.INFO);
         File folder = checkForOrCreateFolder(folderPath);
         if (folder == null) {
-            Util.logAndPrint(logger, "Unable to continue loading: " + configPath, Level.WARN);
+            Logging.logAndPrint(logger, "Unable to continue loading: " + configPath, Level.WARN);
         }
         File configFile = new File(folder, configPath);
         if (!configFile.exists()) {
-            Util.log(logger, "Config file does not exist: " + configPath, Level.INFO);
+            Logging.log(logger, "Config file does not exist: " + configPath, Level.INFO);
             createDefaultConfig(configFile);
         }
         this.config = ConfigFactory.parseFile(configFile).resolve();
-        Util.log(logger, "Loaded configuration from: " + configPath, Level.INFO);
+        Logging.log(logger, "Loaded configuration from: " + configPath, Level.INFO);
     }
 
     private File checkForOrCreateFolder(String folderPath) {
         File directory = new File(folderPath);
         if (!directory.exists()) {
             if (!directory.mkdirs()) {
-                Util.logAndPrint(logger, "Failed to create directory: " + folderPath, Level.WARN);
+                Logging.logAndPrint(logger, "Failed to create directory: " + folderPath, Level.WARN);
                 return null;
             } else {
-                Util.log(logger, "Successfully created directory: " + folderPath, Level.INFO);
+                Logging.log(logger, "Successfully created directory: " + folderPath, Level.INFO);
             }
         }
         return directory;

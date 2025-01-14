@@ -2,9 +2,9 @@ package simplexity.commands;
 
 import org.slf4j.event.Level;
 import simplexity.Main;
+import simplexity.config.locale.Message;
 import simplexity.httpserver.LocalServer;
-import simplexity.messages.Output;
-import simplexity.util.Util;
+import simplexity.util.Logging;
 
 public class ExitCommand extends Command {
 
@@ -14,7 +14,7 @@ public class ExitCommand extends Command {
 
     @Override
     public void execute() {
-        Util.logAndPrint(logger, Output.SHUTTING_DOWN, Level.INFO);
+        Logging.logAndPrint(logger, Message.SHUTTING_DOWN.getMessage(), Level.INFO);
         Main.runApp = false;
         LocalServer.stop();
         System.exit(0);

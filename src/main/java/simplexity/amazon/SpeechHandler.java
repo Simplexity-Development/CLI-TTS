@@ -14,8 +14,8 @@ import simplexity.Main;
 import simplexity.config.config.AwsConfig;
 import simplexity.config.config.ReplaceTextConfig;
 import simplexity.config.config.TTSConfig;
-import simplexity.messages.Errors;
-import simplexity.util.Util;
+import simplexity.config.locale.Message;
+import simplexity.util.Logging;
 
 import java.io.InputStream;
 
@@ -25,7 +25,7 @@ public class SpeechHandler {
 
     public SpeechHandler() {
         this.voiceId = AwsConfig.getInstance().getDefaultVoice();
-        Util.log(logger, "Initialized SpeechHandler with default voice: " + voiceId.toString(), Level.INFO);
+        Logging.log(logger, "Initialized SpeechHandler with default voice: " + voiceId.toString(), Level.INFO);
     }
 
     /**
@@ -45,7 +45,7 @@ public class SpeechHandler {
             speechStream = synthesizeSpeech(processedText, voiceId);
         }
         if (speechStream == null) {
-            Util.logAndPrint(logger, Errors.CAUGHT_EXCEPTION.replace("%error%", "Speech stream is null"), Level.ERROR);
+            Logging.logAndPrint(logger, Message.GENERAL_ERROR.getMessage().replace("%error%", "Speech stream is null"), Level.ERROR);
             return;
         }
 
@@ -58,7 +58,6 @@ public class SpeechHandler {
      */
 
     public String replaceText(String text) {
-        TTSConfig ttsConfig = TTSConfig.getInstance();
         for (String key : ReplaceTextConfig.getInstance().getReplaceText().keySet()) {
             text = text.replace(key, ReplaceTextConfig.getInstance().getReplaceText().get(key));
         }
@@ -103,7 +102,6 @@ public class SpeechHandler {
 
     /**
      * Plays the text as speech
-     *
      */
     public void playSpeech(InputStream speechStream) {
         AdvancedPlayer player;
@@ -111,7 +109,7 @@ public class SpeechHandler {
             player = new AdvancedPlayer(speechStream, FactoryRegistry.systemRegistry().createAudioDevice());
             player.play();
         } catch (Exception exception) {
-            Util.logAndPrint(logger, Errors.CAUGHT_EXCEPTION.replace("%error%", exception.getMessage()), Level.ERROR);
+            Logging.logAndPrint(logger, Message.GENERAL_ERROR.getMessage().replace("%error%", exception.getMessage()), Level.ERROR);
         }
     }
 
@@ -119,7 +117,7 @@ public class SpeechHandler {
      * Logs errors during speech synthesis.
      */
     private void logSynthesisError(Exception e, String text) {
-        Util.logAndPrint(logger, Errors.CAUGHT_EXCEPTION.replace("%error%", e.getMessage()), Level.ERROR);
-        Util.logAndPrint(logger, Errors.MESSAGE_NOT_PARSABLE.replace("%message%", text), Level.ERROR);
+        Logging.logAndPrint(logger, Message.GENERAL_ERROR.getMessage().replace("%error%", e.getMessage()), Level.ERROR);
+        Logging.logAndPrint(logger, Message.MESSAGE_NOT_PARSABLE.getMessage().replace("%message%", text), Level.ERROR);
     }
 }

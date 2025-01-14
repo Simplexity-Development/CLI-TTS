@@ -3,8 +3,8 @@ package simplexity.commands;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
-import simplexity.messages.Errors;
-import simplexity.util.Util;
+import simplexity.config.locale.Message;
+import simplexity.util.Logging;
 
 import java.util.HashMap;
 
@@ -13,13 +13,13 @@ public class CommandManager {
     private static final Logger logger = LoggerFactory.getLogger(CommandManager.class);
 
     public void registerCommand(Command command) {
-        Util.log(logger, "Registering command: " + command.name, Level.INFO);
+        Logging.log(logger, "Registering command: " + command.name, Level.INFO);
         commands.put(command.getName(), command);
     }
 
     public boolean runCommand(String command) {
         if (command.startsWith("--") && !commands.containsKey(command)) {
-            Util.logAndPrint(logger, Errors.UNKNOWN_COMMAND.replace("%command%", command), Level.ERROR);
+            Logging.logAndPrint(logger, Message.UNKNOWN_COMMAND.getMessage().replace("%command%", command), Level.ERROR);
             return true;
         }
         if (!commands.containsKey(command)){

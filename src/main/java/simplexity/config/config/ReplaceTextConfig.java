@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 import simplexity.config.AbstractConfig;
-import simplexity.util.Util;
+import simplexity.util.Logging;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -18,13 +18,13 @@ public class ReplaceTextConfig extends AbstractConfig {
     private static ReplaceTextConfig instance;
     public ReplaceTextConfig() {
         super("text-replace.conf", "configs");
-        Util.log(logger, "Initializing Replace Text config class", Level.INFO);
+        Logging.log(logger, "Initializing Replace Text config class", Level.INFO);
     }
 
     public static ReplaceTextConfig getInstance() {
         if (instance == null) {
             instance = new ReplaceTextConfig();
-            Util.log(logger, "Creating new ReplaceTextConfig instance", Level.INFO);
+            Logging.log(logger, "Creating new ReplaceTextConfig instance", Level.INFO);
         }
         return instance;
     }
@@ -32,10 +32,10 @@ public class ReplaceTextConfig extends AbstractConfig {
     @Override
     public void createDefaultConfig(File configFile) {
         try (FileWriter writer = new FileWriter(configFile)) {
-            Util.log(logger, "Writing default replace text configuration", Level.INFO);
+            Logging.log(logger, "Writing default replace text configuration", Level.INFO);
             writer.write(ConfigDefaults.REPLACE_TEXT);
         } catch (IOException exception) {
-            Util.logAndPrint(logger, "Failed to create default Replace Text Config: " + exception.getMessage(), Level.INFO);
+            Logging.logAndPrint(logger, "Failed to create default Replace Text Config: " + exception.getMessage(), Level.INFO);
         }
     }
 
@@ -45,13 +45,13 @@ public class ReplaceTextConfig extends AbstractConfig {
             replaceText = new HashMap<>();
         }
         replaceText.clear();
-        Util.log(logger, "Clearing existing replace text entries", Level.DEBUG);
+        Logging.log(logger, "Clearing existing replace text entries", Level.DEBUG);
         config.getConfig("replace-text").entrySet().forEach(entry -> {
             replaceText.put(
                     entry.getKey().replace("\"", ""),
                     String.valueOf(entry.getValue().unwrapped()));
         });
-        Util.log(logger, "Replace text configuration reloaded successfully", Level.INFO);
+        Logging.log(logger, "Replace text configuration reloaded successfully", Level.INFO);
     }
 
     public HashMap<String, String> getReplaceText() {

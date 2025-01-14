@@ -13,10 +13,10 @@ import simplexity.config.AbstractConfig;
 import simplexity.config.config.AwsConfig;
 import simplexity.config.config.ReplaceTextConfig;
 import simplexity.config.config.TTSConfig;
+import simplexity.config.locale.LocaleConfig;
 import simplexity.httpserver.LocalServer;
-import simplexity.setup.PollySetup;
-import simplexity.util.ColorTags;
-import simplexity.util.Util;
+import simplexity.amazon.PollySetup;
+import simplexity.util.Logging;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -24,21 +24,20 @@ import java.util.Scanner;
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
     private static CommandManager commandManager;
-    private static ArrayList<AbstractConfig> configs = new ArrayList<>();
+    private static final ArrayList<AbstractConfig> configs = new ArrayList<>();
     public static PollyHandler pollyHandler;
     private static SpeechHandler speechHandler;
     public static Scanner scanner;
     public static boolean runApp = true;
 
     public static void main(String[] args) {
-        Util.log(logger, "Starting application", Level.INFO);
+        Logging.log(logger, "Starting application", Level.INFO);
         scanner = new Scanner(System.in);
         commandManager = new CommandManager();
         registerCommands(commandManager);
         setupConfigs();
         PollySetup.setupPollyAndSpeech();
         LocalServer.run();
-        System.out.println(ColorTags.parse("<red>TEST</red> <bold> THIS IS A TEST</bold>"));
         while (runApp) {
             String input = scanner.nextLine();
             if (!commandManager.runCommand(input)) {
@@ -60,6 +59,8 @@ public class Main {
         configs.add(ttsConfig);
         ReplaceTextConfig replaceTextConfig = new ReplaceTextConfig();
         configs.add(replaceTextConfig);
+        LocaleConfig localeConfig = new LocaleConfig();
+        configs.add(localeConfig);
     }
 
     public static CommandManager getCommandManager() {
@@ -80,6 +81,10 @@ public class Main {
 
     public static Scanner getScanner(){
         return scanner;
+    }
+
+    public static ArrayList<AbstractConfig> getConfigs() {
+        return configs;
     }
 
 }

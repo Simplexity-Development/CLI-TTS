@@ -17,10 +17,11 @@ public abstract class Command {
 
     public abstract void execute();
 
-    public String getDescription(){
+    public String getDescription() {
         return description;
     }
-    public String getName(){
+
+    public String getName() {
         return name;
     }
 }

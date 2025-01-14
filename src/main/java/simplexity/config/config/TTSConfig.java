@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 import simplexity.config.AbstractConfig;
-import simplexity.util.Util;
+import simplexity.util.Logging;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -20,7 +20,7 @@ public class TTSConfig extends AbstractConfig {
 
     public TTSConfig() {
         super("tts-config.conf", "configs");
-        Util.log(logger, "Initializing TTS config class", Level.INFO);
+        Logging.log(logger, "Initializing TTS config class", Level.INFO);
     }
 
     private static TTSConfig instance;
@@ -35,21 +35,20 @@ public class TTSConfig extends AbstractConfig {
         try (FileWriter writer = new FileWriter(configFile)) {
             writer.write(ConfigDefaults.SERVER_PORT);
         } catch (IOException exception) {
-            Util.logAndPrint(logger, "Failed to create default TTS Config: " + exception.getMessage(), Level.INFO);
+            Logging.logAndPrint(logger, "Failed to create default TTS Config: " + exception.getMessage(), Level.INFO);
         }
     }
 
     @Override
     public void reloadConfig() {
         reloadInts(getConfig());
-        Util.log(logger, "TTS configuration reloaded successfully", Level.INFO);
-
+        Logging.log(logger, "TTS configuration reloaded successfully", Level.INFO);
     }
 
 
     private void reloadInts(Config config) {
         port = config.getInt("server-port");
-        Util.log(logger, "Server port set to: " + port, Level.INFO);
+        Logging.log(logger, "Server port set to: " + port, Level.INFO);
     }
 
     public int getPort() {
