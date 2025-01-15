@@ -12,7 +12,7 @@ import simplexity.commands.ReloadCommand;
 import simplexity.config.AbstractConfig;
 import simplexity.config.config.AwsConfig;
 import simplexity.config.config.ReplaceTextConfig;
-import simplexity.config.config.TTSConfig;
+import simplexity.config.config.TtsConfig;
 import simplexity.config.locale.LocaleConfig;
 import simplexity.httpserver.LocalServer;
 import simplexity.amazon.PollySetup;
@@ -55,7 +55,7 @@ public class Main {
     private static void setupConfigs(){
         AwsConfig awsConfig = new AwsConfig();
         configs.add(awsConfig);
-        TTSConfig ttsConfig = new TTSConfig();
+        TtsConfig ttsConfig = new TtsConfig();
         configs.add(ttsConfig);
         ReplaceTextConfig replaceTextConfig = new ReplaceTextConfig();
         configs.add(replaceTextConfig);

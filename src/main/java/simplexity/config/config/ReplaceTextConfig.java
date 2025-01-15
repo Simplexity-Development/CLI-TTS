@@ -33,7 +33,7 @@ public class ReplaceTextConfig extends AbstractConfig {
     public void createDefaultConfig(File configFile) {
         try (FileWriter writer = new FileWriter(configFile)) {
             Logging.log(logger, "Writing default replace text configuration", Level.INFO);
-            writer.write(ConfigDefaults.REPLACE_TEXT);
+            writer.write(ReplaceTextConfigDefaults.REPLACE_TEXT);
         } catch (IOException exception) {
             Logging.logAndPrint(logger, "Failed to create default Replace Text Config: " + exception.getMessage(), Level.INFO);
         }

@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 import simplexity.Main;
 import simplexity.config.config.AwsConfig;
-import simplexity.config.config.TTSConfig;
+import simplexity.config.config.TtsConfig;
 import simplexity.config.locale.Message;
 import simplexity.util.Logging;
 
@@ -45,7 +45,7 @@ public class PollySetup {
             }
             Logging.logAndPrint(logger, Message.PLEASE_SAVE_AWS_INFO_IN_CONFIG.getMessage(), Level.INFO);
             scanner.nextLine();
-            TTSConfig.getInstance().reloadConfig();
+            TtsConfig.getInstance().reloadConfig();
             if (Main.getPollyHandler() != null) {
                 return;
             }

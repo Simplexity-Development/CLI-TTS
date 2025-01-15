@@ -11,29 +11,29 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class TTSConfig extends AbstractConfig {
+public class TtsConfig extends AbstractConfig {
 
-    private static final Logger logger = LoggerFactory.getLogger(TTSConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(TtsConfig.class);
 
 
     private int port;
 
-    public TTSConfig() {
+    public TtsConfig() {
         super();
         Logging.log(logger, "Initializing TTS config class", Level.INFO);
     }
 
-    private static TTSConfig instance;
+    private static TtsConfig instance;
 
-    public static TTSConfig getInstance() {
-        if (instance == null) instance = new TTSConfig();
+    public static TtsConfig getInstance() {
+        if (instance == null) instance = new TtsConfig();
         return instance;
     }
 
     @Override
     public void createDefaultConfig(File configFile) {
         try (FileWriter writer = new FileWriter(configFile)) {
-            writer.write(ConfigDefaults.SERVER_PORT);
+            writer.write(TtsConfigDefaults.SERVER_PORT);
         } catch (IOException exception) {
             Logging.logAndPrint(logger, "Failed to create default TTS Config: " + exception.getMessage(), Level.INFO);
         }

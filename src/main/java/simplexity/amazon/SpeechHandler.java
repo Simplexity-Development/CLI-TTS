@@ -13,7 +13,6 @@ import org.slf4j.event.Level;
 import simplexity.Main;
 import simplexity.config.config.AwsConfig;
 import simplexity.config.config.ReplaceTextConfig;
-import simplexity.config.config.TTSConfig;
 import simplexity.config.locale.Message;
 import simplexity.util.Logging;
 

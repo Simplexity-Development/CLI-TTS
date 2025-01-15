@@ -43,11 +43,11 @@ public class AwsConfig extends AbstractConfig {
     public void createDefaultConfig(File configFile) {
         try (FileWriter writer = new FileWriter(configFile)) {
             Logging.log(logger, "Writing default AWS configuration", Level.INFO);
-            writer.write(ConfigDefaults.AWS_ACCESS_KEY);
-            writer.write(ConfigDefaults.AWS_SECRET_KEY);
-            writer.write(ConfigDefaults.AWS_REGION);
-            writer.write(ConfigDefaults.DEFAULT_VOICE);
-            writer.write(ConfigDefaults.VOICE_PREFIXES);
+            writer.write(AwsConfigDefaults.AWS_ACCESS_KEY);
+            writer.write(AwsConfigDefaults.AWS_SECRET_KEY);
+            writer.write(AwsConfigDefaults.AWS_REGION);
+            writer.write(AwsConfigDefaults.DEFAULT_VOICE);
+            writer.write(AwsConfigDefaults.VOICE_PREFIXES);
         } catch (IOException exception) {
             Logging.logAndPrint(logger, "Failed to create default Replace Text Config: " + exception.getMessage(), Level.INFO);
         }
