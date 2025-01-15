@@ -19,7 +19,7 @@ public class TTSConfig extends AbstractConfig {
     private int port;
 
     public TTSConfig() {
-        super("tts-config.conf", "configs");
+        super();
         Logging.log(logger, "Initializing TTS config class", Level.INFO);
     }
 
@@ -41,6 +41,7 @@ public class TTSConfig extends AbstractConfig {
 
     @Override
     public void reloadConfig() {
+        loadConfig("tts-config.conf", "configs");
         reloadInts(getConfig());
         Logging.log(logger, "TTS configuration reloaded successfully", Level.INFO);
     }

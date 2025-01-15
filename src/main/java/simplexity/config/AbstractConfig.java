@@ -13,12 +13,11 @@ public abstract class AbstractConfig {
     private static final Logger logger = LoggerFactory.getLogger(AbstractConfig.class);
     protected Config config;
 
-    public AbstractConfig(String configPath, String folderPath) {
-        loadConfig(configPath, folderPath);
+    public AbstractConfig() {
         reloadConfig();
     }
 
-    private void loadConfig(String configPath, String folderPath) {
+    public void loadConfig(String configPath, String folderPath) {
         Logging.log(logger, "Loading configuration from directory: " + folderPath + ", file:" + configPath, Level.INFO);
         File folder = checkForOrCreateFolder(folderPath);
         if (folder == null) {

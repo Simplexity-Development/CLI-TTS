@@ -26,7 +26,7 @@ public class AwsConfig extends AbstractConfig {
     private static AwsConfig instance;
 
     public AwsConfig() {
-        super("aws-config.conf", "configs"); //todo figure out a better way to handle the config names
+        super(); //todo figure out a better way to handle the config names
         Logging.log(logger, "Initializing AWS config class", Level.INFO);
     }
 
@@ -56,6 +56,7 @@ public class AwsConfig extends AbstractConfig {
 
     @Override
     public void reloadConfig() {
+        loadConfig("aws-config.conf", "configs");
         Logging.log(logger, "Reloading voice prefixes configuration", Level.INFO);
         reloadVoicePrefixes(getConfig());
         Logging.log(logger, "Reloading default voice configuration", Level.INFO);

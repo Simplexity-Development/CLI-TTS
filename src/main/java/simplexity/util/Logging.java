@@ -10,10 +10,9 @@ public class Logging {
     private static final Pattern ANSI_PATTERN = Pattern.compile("\u001B\\[[;\\d]*m");
 
     public static void logAndPrint(Logger logger, String message, Level level) {
-        String printMessage = ColorTags.parse(message);
-        String logMessage = stripAnsiCodes(printMessage);
+        String logMessage = stripAnsiCodes(message);
         logger.atLevel(level).log(logMessage);
-        System.out.println(printMessage);
+        System.out.println(message);
     }
 
     public static void log(Logger logger, String message, Level level) {

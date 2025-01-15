@@ -17,7 +17,7 @@ public class ReplaceTextConfig extends AbstractConfig {
     private HashMap<String, String> replaceText = new HashMap<>();
     private static ReplaceTextConfig instance;
     public ReplaceTextConfig() {
-        super("text-replace.conf", "configs");
+        super();
         Logging.log(logger, "Initializing Replace Text config class", Level.INFO);
     }
 
@@ -41,6 +41,7 @@ public class ReplaceTextConfig extends AbstractConfig {
 
     @Override
     public void reloadConfig() {
+        loadConfig("text-replace.conf", "configs");
         if (replaceText == null) {
             replaceText = new HashMap<>();
         }

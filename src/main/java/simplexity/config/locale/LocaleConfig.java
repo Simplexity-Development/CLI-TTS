@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 import simplexity.config.AbstractConfig;
+import simplexity.util.ColorTags;
 import simplexity.util.Logging;
 
 import java.io.File;
@@ -16,7 +17,7 @@ public class LocaleConfig extends AbstractConfig {
     private static LocaleConfig instance;
 
     public LocaleConfig() {
-        super("locale.conf", "configs");
+        super();
         Logging.log(logger, "Initializing LocaleConfig class", Level.INFO);
     }
 
@@ -43,10 +44,13 @@ public class LocaleConfig extends AbstractConfig {
 
     @Override
     public void reloadConfig() {
+        Logging.log(logger, "Reloading config file locale.conf", Level.INFO);
+        loadConfig("locale.conf", "configs");
         Config localeConfig = getConfig();
         for (Message message : Message.values()) {
             String localeMessage = localeConfig.getString(message.getPath());
             if (localeMessage == null) continue;
+            localeMessage = ColorTags.parse(localeMessage);
             message.setMessage(localeMessage);
             Logging.log(logger, "Setting " + message + " to " + localeMessage, Level.DEBUG);
         }
