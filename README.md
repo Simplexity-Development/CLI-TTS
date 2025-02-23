@@ -34,13 +34,7 @@ References:
 - [Amazon Polly Description of Limits/Price](https://aws.amazon.com/polly/pricing/)
 - [Setting up a user and how to use IAM](https://docs.aws.amazon.com/signer/latest/developerguide/iam-setup.html)
 
-### Twitch
-In order to use this to interface with twitch, you will need to create an application on [Twitch's Dev Console](https://dev.twitch.tv/console)
-![Twitch Dev Console Landing Page](github/resources/twitch_application_registration_landing_page.png)
 
-![Twitch Dev Console 'register your application' page](github/resources/twitch_application_registration.png)
-
-Once you have created an application, you will be given a client ID and a Client Secret, you will place these in your `tts-config.conf`
 ### Default configuration
 
 ```HOCON
