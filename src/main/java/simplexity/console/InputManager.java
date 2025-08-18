@@ -8,12 +8,17 @@ import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-import simplexity.Main;
+import org.jline.utils.AttributedString;
+import org.jline.utils.Display;
 import simplexity.config.ConfigHandler;
 import simplexity.config.rules.SpeechEffectRule;
 import simplexity.config.rules.VoicePrefixRule;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class InputManager {
 
@@ -21,6 +26,10 @@ public class InputManager {
     private final String username;
 
     private LineReader reader;
+    private Terminal terminal;
+    private Display display;
+    private final List<String> messageBuffer = new ArrayList<>();
+    private final Map<String, String> idToMessageMap = new HashMap<>();
 
     public InputManager(TwitchClient twitchClient, String username) {
         this.twitchClient = twitchClient;
@@ -28,7 +37,7 @@ public class InputManager {
     }
 
     public void start() throws IOException {
-        Terminal terminal = TerminalBuilder.builder()
+        terminal = TerminalBuilder.builder()
                 .system(true)
                 .build();
 
@@ -36,6 +45,8 @@ public class InputManager {
                 .terminal(terminal)
                 .parser(new DefaultParser())
                 .build();
+
+        display = new Display(terminal, false);
         startInputLoop();
     }
 
@@ -77,6 +88,38 @@ public class InputManager {
             input = effectRule.clearMarkdown(input);
         }
         return input;
+    }
+
+    public void printMessage(String id, String message){
+        idToMessageMap.put(id, message);
+        messageBuffer.add(message);
+        updateDisplay();
+    }
+
+    public void deleteMessage(String id){
+        String msg = idToMessageMap.remove(id);
+        if (msg != null) {
+            messageBuffer.remove(msg);
+            updateDisplay();
+        }
+    }
+
+    public void modifyMessage(String id, String newMessage) {
+        String msg = idToMessageMap.get(id);
+        if (msg == null) return;
+        int index = messageBuffer.indexOf(msg);
+        if (index == -1) return;
+
+        messageBuffer.set(index, newMessage);
+        idToMessageMap.put(id, newMessage);
+        updateDisplay();
+    }
+
+    private void updateDisplay(){
+        List<AttributedString> attributedLines = messageBuffer.stream()
+                .map(AttributedString::fromAnsi)
+                .toList();
+        display.update(attributedLines, -1);
     }
 
     public LineReader getReader() {

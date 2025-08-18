@@ -29,7 +29,7 @@ public class ConfigHandler {
     private Region awsRegion;
     private VoiceId defaultVoice;
     private String awsAccessID, awsSecretKey, twitchChannel, twitchClientId, twitchClientSecret, twitchAccessToken,
-            twitchRefreshToken, twitchUsername, defaultOpeningTag, defaultClosingTag;
+            twitchRefreshToken, twitchUsername, defaultOpeningTag, defaultClosingTag, deletedMessageFormat;
     private Integer serverPort, authPort;
     private Boolean useTwitch, sendMessages, cleanMessages;
     private static ConfigHandler instance;
@@ -187,7 +187,7 @@ public class ConfigHandler {
         sendMessages = config.getOption("twitch-api.messages.send", Boolean.class, Boolean.FALSE);
         cleanMessages = config.getOption("twitch-api.messages.clean-markdown", Boolean.class, Boolean.TRUE);
         authPort = config.getOption("internal-settings.twitch-auth-port", Integer.class, 8080);
-
+        deletedMessageFormat = config.getOption("twitch-api.deleted-messages.replace-format", String.class, "%user% ➜ <i><br-black>[This message was removed by a moderator]</color></i>");
     }
 
     private void reloadKeys(YmlConfig config) {
@@ -287,5 +287,9 @@ public class ConfigHandler {
 
     public String getDefaultClosingTag() {
         return defaultClosingTag;
+    }
+
+    public String getDeletedMessageFormat() {
+        return deletedMessageFormat;
     }
 }
