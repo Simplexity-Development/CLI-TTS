@@ -15,6 +15,8 @@ twitch-api:
   messages:
     send: false
     clean-markdown: true
+  deleted-messages:
+    replace-format: "%user% ➜ <i><br-black>[This message was removed by a moderator]</color></i>"
   channel: ""
   username: ""
   chat:

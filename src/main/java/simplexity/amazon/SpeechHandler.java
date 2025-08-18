@@ -24,7 +24,7 @@ public class SpeechHandler {
     private VoiceId voiceId;
 
     public SpeechHandler() {
-        this.voiceId = ConfigHandler.getInstance().getDefaultVoice();
+        voiceId = ConfigHandler.getInstance().getDefaultVoice();
         Logging.log(logger, "Initialized SpeechHandler with default voice: " + voiceId.toString(), Level.INFO);
     }
 
