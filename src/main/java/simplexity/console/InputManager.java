@@ -85,7 +85,7 @@ public class InputManager {
                 }
             }
         });
-        inputThread.setDaemon(true);
+        inputThread.setDaemon(false);
         inputThread.start();
     }
 
