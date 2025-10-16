@@ -10,7 +10,11 @@ import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.AttributedString;
 import org.jline.utils.Display;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 import simplexity.config.ConfigHandler;
+import simplexity.config.LocaleHandler;
 import simplexity.config.rules.SpeechEffectRule;
 import simplexity.config.rules.VoicePrefixRule;
 
@@ -19,8 +23,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class InputManager {
+
+    private static final Logger logger = LoggerFactory.getLogger(InputManager.class);
 
     private final TwitchClient twitchClient;
     private final String username;
@@ -30,6 +38,8 @@ public class InputManager {
     private Display display;
     private final List<String> messageBuffer = new ArrayList<>();
     private final Map<String, String> idToMessageMap = new HashMap<>();
+
+    private final BlockingQueue<Runnable> displayQueue = new LinkedBlockingQueue<>();
 
     public InputManager(TwitchClient twitchClient, String username) {
         this.twitchClient = twitchClient;
@@ -47,12 +57,14 @@ public class InputManager {
                 .build();
 
         display = new Display(terminal, false);
+        display.reset();
         startInputLoop();
     }
 
     private void startInputLoop() {
         Thread inputThread = new Thread(() -> {
             while (true) {
+                processDisplayQueue();
                 try {
                     String line = reader.readLine("> ");
                     if (line.trim().isEmpty()) continue;
@@ -90,10 +102,23 @@ public class InputManager {
         return input;
     }
 
+    public void processDisplayQueue(){
+        Runnable task;
+        while ((task = displayQueue.poll()) != null) {
+            try {
+                task.run();
+            } catch (Exception e) {
+                Logging.logAndPrint(logger, LocaleHandler.getInstance().getErrorGeneral(), Level.WARN);
+            }
+        }
+    }
+
     public void printMessage(String id, String message){
-        idToMessageMap.put(id, message);
-        messageBuffer.add(message);
-        updateDisplay();
+        displayQueue.offer(() -> {
+            idToMessageMap.put(id, message);
+            messageBuffer.add(message);
+            updateDisplay();
+        });
     }
 
     public void deleteMessage(String id){
@@ -119,6 +144,7 @@ public class InputManager {
         List<AttributedString> attributedLines = messageBuffer.stream()
                 .map(AttributedString::fromAnsi)
                 .toList();
+        display.clear();
         display.update(attributedLines, -1);
     }
 

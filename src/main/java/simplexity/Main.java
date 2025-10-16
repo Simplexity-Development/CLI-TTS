@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 import simplexity.amazon.PollyInit;
+import simplexity.config.ConfigHandler;
 import simplexity.config.ConfigInit;
 import simplexity.console.ConsoleInit;
 import simplexity.console.Logging;
@@ -18,7 +19,7 @@ public class Main {
         ConfigInit.initializeConfigs();
         ConsoleInit.initializeConsoleStuff();
         PollyInit.setupPollyAndSpeech();
-        TwitchInit.initializeTwitch();
+        if (ConfigHandler.getInstance().shouldUseTwitch()) TwitchInit.initializeTwitch();
         LocalServer.run();
     }
 

@@ -3,6 +3,7 @@ package simplexity.console;
 import org.slf4j.Logger;
 import org.slf4j.event.Level;
 
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 public class Logging {
@@ -16,6 +17,15 @@ public class Logging {
         logger.atLevel(level).log(logMessage);
         System.out.println(ColorTags.parse(message));
     }
+
+    public static void logAndPrint(Logger logger, String message, ArrayList<String> replaceStrings, Level level) {
+        for (String value : replaceStrings) {
+            message = message.formatted(value);
+        }
+        logAndPrint(logger, message, level);
+    }
+
+
 
     public static void log(Logger logger, String message, Level level) {
         logger.atLevel(level).log(message);
