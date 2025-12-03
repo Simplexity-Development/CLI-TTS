@@ -18,14 +18,33 @@ import simplexity.config.rules.VoicePrefixRule;
 import simplexity.console.Logging;
 
 import java.io.InputStream;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class SpeechHandler {
     private static final Logger logger = LoggerFactory.getLogger(SpeechHandler.class);
     private VoiceId voiceId;
+    private final BlockingQueue<String> speechQueue = new LinkedBlockingQueue<>();
 
     public SpeechHandler() {
         voiceId = ConfigHandler.getInstance().getDefaultVoice();
+        new Thread(this::runSpeechLoop, "SpeechProcessor").start();
         Logging.log(logger, "Initialized SpeechHandler with default voice: " + voiceId.toString(), Level.INFO);
+    }
+
+    public void queueSpeech(String text){
+        speechQueue.offer(text);
+    }
+
+    private void runSpeechLoop(){
+        while (true) {
+            try {
+                String text = speechQueue.take();
+                processSpeech(text);
+            } catch (Exception e) {
+                Logging.logAndPrint(logger, LocaleHandler.getInstance().getErrorGeneral().replace("%error%", e.getMessage()), Level.ERROR);
+            }
+        }
     }
 
     /**

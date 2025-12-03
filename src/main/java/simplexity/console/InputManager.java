@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 import simplexity.config.ConfigHandler;
-import simplexity.config.LocaleHandler;
 import simplexity.config.rules.SpeechEffectRule;
 import simplexity.config.rules.VoicePrefixRule;
 
@@ -58,13 +57,30 @@ public class InputManager {
 
         display = new Display(terminal, false);
         display.reset();
+
+        startDisplayThread();
         startInputLoop();
+    }
+
+    private void startDisplayThread() {
+        Thread displayThread = new Thread(() -> {
+            while (true) {
+                processDisplayQueue();
+                updateDisplay();
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ignored) {
+                }
+            }
+        });
+
+        displayThread.setDaemon(true);
+        displayThread.start();
     }
 
     private void startInputLoop() {
         Thread inputThread = new Thread(() -> {
             while (true) {
-                processDisplayQueue();
                 try {
                     String line = reader.readLine("> ");
                     if (line.trim().isEmpty()) continue;
@@ -79,7 +95,7 @@ public class InputManager {
                         }
                         twitchClient.getChat().sendMessage(username, messageToSend);
                     }
-                    ConfigHandler.getInstance().getSpeechHandler().processSpeech(line);
+                    ConfigHandler.getInstance().getSpeechHandler().queueSpeech(line);
                 } catch (UserInterruptException | EndOfFileException e) {
                     break;
                 }
@@ -102,26 +118,27 @@ public class InputManager {
         return input;
     }
 
-    public void processDisplayQueue(){
+    public void processDisplayQueue() {
         Runnable task;
         while ((task = displayQueue.poll()) != null) {
             try {
                 task.run();
             } catch (Exception e) {
-                Logging.logAndPrint(logger, LocaleHandler.getInstance().getErrorGeneral(), Level.WARN);
+                Logging.log(logger, e.getMessage(), Level.WARN);
             }
         }
     }
 
-    public void printMessage(String id, String message){
+    public void printMessage(String id, String message) {
         displayQueue.offer(() -> {
             idToMessageMap.put(id, message);
             messageBuffer.add(message);
-            updateDisplay();
+            reader.printAbove(message);
+            reader.callWidget(LineReader.REDISPLAY);
         });
     }
 
-    public void deleteMessage(String id){
+    public void deleteMessage(String id) {
         String msg = idToMessageMap.remove(id);
         if (msg != null) {
             messageBuffer.remove(msg);
@@ -140,7 +157,7 @@ public class InputManager {
         updateDisplay();
     }
 
-    private void updateDisplay(){
+    private void updateDisplay() {
         List<AttributedString> attributedLines = messageBuffer.stream()
                 .map(AttributedString::fromAnsi)
                 .toList();
